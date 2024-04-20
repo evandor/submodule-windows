@@ -134,7 +134,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import RenameWindowDialog from "components/dialogues/RenameWindowDialog.vue";
+import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useSettingsStore} from "stores/settingsStore";
 
 const {handleError} = useNotificationHandler()
