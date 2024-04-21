@@ -76,7 +76,7 @@ export const useWindowsStore = defineStore('windows', () => {
   const getWindowsForMarkupTable = computed(() =>
      // (additionalActions: WindowAction[]) => {
 
-    (fnc: (name: string) => WindowAction[]) => {
+    (fnc: (name: string) => WindowAction[] = (a:string) => []) => {
 
        const result: WindowHolder[] = _.map(currentChromeWindows.value as chrome.windows.Window[], (cw: chrome.windows.Window) => {
          const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
