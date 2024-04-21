@@ -33,7 +33,6 @@
 
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
-import {useTabsStore} from "stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
@@ -51,14 +50,13 @@ const props = defineProps({
 
 const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-
 const newWindowName = ref(props.currentName)
 const newWindowNameExists = ref(false)
 const hideWarning = ref(false)
 
 watchEffect(() => {
-  newWindowNameExists.value = !!tabsStore.nameExistsInContextTabset(newWindowName.value);
+  // TODO
+  newWindowNameExists.value = false //!!tabsStore.nameExistsInContextTabset(newWindowName.value);
 })
 
 const updateWindow = () => useCommandExecutor()

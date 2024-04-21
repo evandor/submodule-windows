@@ -5,6 +5,7 @@ import {useUtils} from "src/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
+import IndexedDbStorage from "src/windows/persistence/IndexedDbStorage";
 
 /**
  * a pinia store for "Windows".
@@ -12,7 +13,7 @@ import throttledQueue from "throttled-queue";
  * Elements are persisted to the storage provided in the initialize function
  */
 
-let storage: PersistenceService = null as unknown as PersistenceService
+let storage = IndexedDbStorage
 
 function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve) => {
@@ -72,12 +73,12 @@ export const useWindowsStore = defineStore('windows', () => {
   const windowSet = ref<Set<string>>(new Set())
 
   /**
-   * initialize store with
-   * @param providedDb a persistence storage
+   * initialize store
    */
-  async function initialize(providedDb: PersistenceService) {
+  async function initialize() {
     console.debug(" ...initializing windowsStore")
-    storage = providedDb
+   // storage = IndexedDbStorage
+    await storage.init()
     await setup("initialization")
   }
 
@@ -292,15 +293,15 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function removeWindow(windowId: number) {
     await storage.removeWindow(windowId)
-      .catch((err) => console.warn("could not delete window " + windowId + " due to: " + err))
+      .catch((err:any) => console.warn("could not delete window " + windowId + " due to: " + err))
   }
 
   async function removeWindowByTitle(title: string) {
-    storage.getWindows().then((windows) => {
+    storage.getWindows().then((windows: Window[]) => {
       windows.forEach(w => {
         if (w.title === title) {
           storage.removeWindow(w.id)
-            .catch((err) => console.debug("could not delete window " + w.id + " due to: " + err))
+            .catch((err:any) => console.debug("could not delete window " + w.id + " due to: " + err))
         }
       })
     })
@@ -352,7 +353,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {
     //console.log("updating window index", windowId, indexToUse)
-    return storage.getWindow(windowId).then(w => {
+    return storage.getWindow(windowId).then((w: Window | undefined) => {
       if (w) {
         w.index = indexToUse
         var allWindow = allWindows.value.get(windowId)
@@ -390,22 +391,14 @@ export const useWindowsStore = defineStore('windows', () => {
     currentChromeWindows,
     currentChromeWindow,
     currentWindowName,
-    windowFor,
     windowNameFor,
-    currentWindowFor,
-    addToWindowSet,
     windowSet,
     screenshotWindow,
     upsertWindow,
     removeWindow,
-    openThrottledInWindow,
     removeWindowByTitle,
     refreshCurrentWindows,
     windowForId,
-    updateWindowIndex,
     allWindows,
-    upsertTabsetWindow,
-    currentWindowForId,
-    refreshTabsetWindow
   }
 })
