@@ -1,11 +1,12 @@
 import {defineStore} from 'pinia';
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
 import IndexedDbStorage from "src/windows/persistence/IndexedDbStorage";
+import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 
 /**
  * a pinia store for "Windows".
@@ -71,6 +72,32 @@ export const useWindowsStore = defineStore('windows', () => {
    * tabsets are added during startup (tabsStore#addTabset)
    */
   const windowSet = ref<Set<string>>(new Set())
+
+  const getWindowsForMarkupTable = computed(() =>
+     // (additionalActions: WindowAction[]) => {
+
+    (fnc: (name: string) => WindowAction[]) => {
+
+       const result: WindowHolder[] = _.map(currentChromeWindows.value as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+         const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
+         const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
+        // const additionalActions: WindowAction[] = []
+
+         return WindowHolder.of(
+           cw,
+           windowFromStore?.index || 0,
+           windowName,
+           windowFromStore?.hostList || [],
+           fnc(windowName)
+         )
+
+       })
+
+       return _.sortBy(result, "index")
+
+
+    })
+
 
   /**
    * initialize store
@@ -384,6 +411,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   return {
+    getWindowsForMarkupTable,
     initialize,
     initListeners,
     resetListeners,
