@@ -400,5 +400,7 @@ export const useWindowsStore = defineStore('windows', () => {
     refreshCurrentWindows,
     windowForId,
     allWindows,
+    addToWindowSet,
+    upsertTabsetWindow
   }
 })
