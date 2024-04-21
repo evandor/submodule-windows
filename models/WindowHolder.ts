@@ -4,6 +4,7 @@ export class WindowAction {
 
   constructor(
     public icon: string,
+    public action: string | undefined = undefined,
     public color: string = "text-grey",
     public tooltip: string | undefined = undefined,
     public disabled: boolean = false

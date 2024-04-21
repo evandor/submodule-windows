@@ -81,6 +81,7 @@
 
                 <template v-for="item in row.additionalActions">
                   <q-icon
+                    @click.stop="emits('wasClicked', {action:item.action, window: row})"
                     :name="item.icon"
                     :disable="item.disabled"
                     size="xs"
@@ -89,21 +90,6 @@
                     <q-tooltip v-if="item.tooltip" :delay=500 class="tooltip-small">{{ item.tooltip }}</q-tooltip>
                   </q-icon>
                 </template>
-
-                <!--                <q-icon v-if="!windowIsManaged(row)"-->
-                <!--                        name="o_bookmark_add"-->
-                <!--                        size="xs"-->
-                <!--                        class="q-ml-sm text-warning cursor-pointer"-->
-                <!--                        @click="saveAsTabset(row.getId(), row.getName())">-->
-                <!--                  <q-tooltip :delay=500 class="tooltip-small">Save as Tabset</q-tooltip>-->
-                <!--                </q-icon>-->
-                <!--                <q-icon v-else-->
-                <!--                        name="o_bookmark_add"-->
-                <!--                        :disabled="true"-->
-                <!--                        size="xs"-->
-                <!--                        class="q-ml-sm text-grey cursor-pointer">-->
-                <!--                  <q-tooltip :delay=500 class="tooltip-small">Already a tabset</q-tooltip>-->
-                <!--                </q-icon>-->
 
                 <q-icon v-if="useWindowsStore().currentChromeWindows.length === 1"
                         name="o_close"
@@ -141,20 +127,19 @@ import _ from "lodash";
 import {useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {useUtils} from "src/services/Utils";
-import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useSettingsStore} from "stores/settingsStore";
 import {WindowHolder} from "src/windows/models/WindowHolder";
+import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 
-const {handleError} = useNotificationHandler()
-const {sendMsg} = useUtils()
-
-const $q = useQuasar()
 const settingsStore = useSettingsStore()
 
 const props = defineProps({
   rows: {type: Object as PropType<WindowHolder[]>, required: true}
 })
+
+const emits = defineEmits(['wasClicked','recalculateWindows'])
+
+const $q = useQuasar()
 
 const currentWindowName = ref('---')
 
@@ -200,17 +185,7 @@ const openWindow = (windowId: number) => {
       })
   }
 }
-const saveAsTabset = (windowId: number, name: string) => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      windowId: windowId,
-      spaceId: useSpacesStore().space?.id,
-      name: name,
-      fromPanel: true
-    }
-  })
-}
+
 
 const minimizeWindow = (windowId: number) => {
   chrome.windows.update(windowId, {state: "minimized"})
@@ -257,15 +232,16 @@ const handleDragAndDrop = async (event: any) => {
 }
 
 const openRenameWindowDialog = (windowId: number, currentName: string, index: number) => {
-  // $q.dialog({component: RenameWindowDialog, componentProps: {windowId, currentName, index}})
-  //   .onOk((name: string) => {
-  //     console.log("hier", name)
-  //     rows.value = calcWindowRows()
-  //     // if (useWindowsStore().currentChromeWindow?.id === windowId) {
-  //     //   useWindowsStore().currentWindowName = name
-  //     //   //sendMsg('window-updated', {initiated: "RenameWindowDialog#updateWindow"})
-  //     // }
-  //   })
+  $q.dialog({component: RenameWindowDialog, componentProps: {windowId, currentName, index}})
+    .onOk((name: string) => {
+      console.log("hier", name)
+      emits('recalculateWindows')
+      //rows.value = calcWindowRows()
+      // if (useWindowsStore().currentChromeWindow?.id === windowId) {
+      //   useWindowsStore().currentWindowName = name
+      //   //sendMsg('window-updated', {initiated: "RenameWindowDialog#updateWindow"})
+      // }
+    })
 }
 
 const windowNameRowClass = (row: any) => {
