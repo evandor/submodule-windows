@@ -137,19 +137,12 @@
 
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, PropType, ref, watch, watchEffect} from "vue";
-import {Window} from "src/windows/models/Window"
 import _ from "lodash";
 import {useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useSpacesStore} from "stores/spacesStore";
-import {useTabsStore} from "stores/tabsStore";
-import {Tabset} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useSettingsStore} from "stores/settingsStore";
 import {WindowHolder} from "src/windows/models/WindowHolder";
 
