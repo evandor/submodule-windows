@@ -5,8 +5,9 @@ import {useUtils} from "src/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
-import IndexedDbStorage from "src/windows/persistence/IndexedDbStorage";
+import IndexedDbStorage from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
+import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 
 /**
  * a pinia store for "Windows".
@@ -14,7 +15,7 @@ import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
  * Elements are persisted to the storage provided in the initialize function
  */
 
-let storage = IndexedDbStorage
+let storage = IndexedDbWindowsPersistence
 
 function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve) => {
@@ -104,7 +105,7 @@ export const useWindowsStore = defineStore('windows', () => {
    */
   async function initialize() {
     console.debug(" ...initializing windowsStore")
-   // storage = IndexedDbStorage
+    storage = IndexedDbWindowsPersistence
     await storage.init()
     await setup("initialization")
   }

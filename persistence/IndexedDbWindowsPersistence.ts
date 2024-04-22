@@ -3,7 +3,7 @@ import _ from "lodash";
 import {useUiStore} from "src/stores/uiStore";
 import {Window} from "src/windows/models/Window";
 
-class IndexedDbStorage {
+class IndexedDbWindowsPersistence {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   async init() {
@@ -140,4 +140,4 @@ class IndexedDbStorage {
 
 }
 
-export default new IndexedDbStorage()
+export default new IndexedDbWindowsPersistence()
