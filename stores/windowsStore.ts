@@ -426,6 +426,8 @@ export const useWindowsStore = defineStore('windows', () => {
     removeWindow,
     removeWindowByTitle,
     refreshCurrentWindows,
+    windowFor,
+    currentWindowFor,
     windowForId,
     allWindows,
     addToWindowSet,
