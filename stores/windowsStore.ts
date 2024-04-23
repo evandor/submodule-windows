@@ -8,6 +8,10 @@ import throttledQueue from "throttled-queue";
 import IndexedDbStorage from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
+import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 /**
  * a pinia store for "Windows".
@@ -35,7 +39,8 @@ export const useWindowsStore = defineStore('windows', () => {
   const onCreatedListener = () => setup("onCreated")
   const onRemovedListener = (windowId: number) => onRemoved(windowId)
   const onBoundsChangedListener = (window: chrome.windows.Window) => onUpdate(window.id || 0)
-  const onFocusChangedListener = (windowId:number) => { /** noop */ }
+  const onFocusChangedListener = (windowId: number) => { /** noop */
+  }
 
   /**
    * the map of all 'ever used' Chrome windows, even if they are not currently in use,
@@ -75,26 +80,26 @@ export const useWindowsStore = defineStore('windows', () => {
   const windowSet = ref<Set<string>>(new Set())
 
   const getWindowsForMarkupTable = computed(() =>
-     // (additionalActions: WindowAction[]) => {
+    // (additionalActions: WindowAction[]) => {
 
-    (fnc: (name: string) => WindowAction[] = (a:string) => []) => {
+    (fnc: (name: string) => WindowAction[] = (a: string) => []) => {
 
-       const result: WindowHolder[] = _.map(currentChromeWindows.value as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-         const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
-         const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
+      const result: WindowHolder[] = _.map(currentChromeWindows.value as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+        const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
+        const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
         // const additionalActions: WindowAction[] = []
 
-         return WindowHolder.of(
-           cw,
-           windowFromStore?.index || 0,
-           windowName,
-           windowFromStore?.hostList || [],
-           fnc(windowName)
-         )
+        return WindowHolder.of(
+          cw,
+          windowFromStore?.index || 0,
+          windowName,
+          windowFromStore?.hostList || [],
+          fnc(windowName)
+        )
 
-       })
+      })
 
-       return _.sortBy(result, "index")
+      return _.sortBy(result, "index")
 
 
     })
@@ -111,10 +116,12 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function setup(trigger: string = "", keepWindowsFromStorage = false) {
-    if (!inBexMode()) {
+    if (!usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
       return
     }
-    console.debug(" init chrome windows listeners with trigger", trigger)
+
+    console.debug(` init chrome windows listeners with trigger ${trigger}`)
+
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
     currentChromeWindows.value = browserWindows
     console.debug(` initializing current chrome windows with ${currentChromeWindows.value?.length} window(s)`)
@@ -195,6 +202,7 @@ export const useWindowsStore = defineStore('windows', () => {
         }
       }
     }
+
   }
 
   async function onRemoved(windowId: number) {
@@ -231,7 +239,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   function initListeners() {
     if (inBexMode()) {
-      console.debug (" ...initializing windowsStore Listeners")
+      console.debug(" ...initializing windowsStore Listeners")
       chrome.windows.onCreated.addListener(onCreatedListener)
       chrome.windows.onRemoved.addListener(onRemovedListener)
       chrome.windows.onFocusChanged.addListener(onFocusChangedListener)
@@ -321,7 +329,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function removeWindow(windowId: number) {
     await storage.removeWindow(windowId)
-      .catch((err:any) => console.warn("could not delete window " + windowId + " due to: " + err))
+      .catch((err: any) => console.warn("could not delete window " + windowId + " due to: " + err))
   }
 
   async function removeWindowByTitle(title: string) {
@@ -329,7 +337,7 @@ export const useWindowsStore = defineStore('windows', () => {
       windows.forEach(w => {
         if (w.title === title) {
           storage.removeWindow(w.id)
-            .catch((err:any) => console.debug("could not delete window " + w.id + " due to: " + err))
+            .catch((err: any) => console.debug("could not delete window " + w.id + " due to: " + err))
         }
       })
     })
