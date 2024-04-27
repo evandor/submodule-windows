@@ -46,7 +46,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useWindowsStore} from "src/windows/stores/windowsStore";

@@ -432,6 +432,8 @@ export const useWindowsStore = defineStore('windows', () => {
     windowForId,
     allWindows,
     addToWindowSet,
-    upsertTabsetWindow
+    upsertTabsetWindow,
+    refreshTabsetWindow,
+    openThrottledInWindow
   }
 })
