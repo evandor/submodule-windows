@@ -56,7 +56,7 @@ const hideWarning = ref(false)
 
 watchEffect(() => {
   // TODO
-  newWindowNameExists.value = false //!!tabsStore.nameExistsInContextTabset(newWindowName.value);
+  newWindowNameExists.value = false //!!useTabsetsStore().existingInTabset(newWindowName.value);
 })
 
 const updateWindow = () => useCommandExecutor()
