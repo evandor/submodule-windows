@@ -1,17 +1,12 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
-import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
-import IndexedDbStorage from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
-import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 
 /**
  * a pinia store for "Windows".
