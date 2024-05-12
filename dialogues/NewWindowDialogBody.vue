@@ -42,7 +42,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -57,9 +56,6 @@ const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const props = defineProps({
   tabsetId: {type: String, required: true}
 })
-
-const tabsStore = useTabsStore()
-const router = useRouter()
 
 const newWindowName = ref('')
 const isValid = ref(false)

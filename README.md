@@ -1,4 +1,4 @@
-# submodule-bookmarks
+# submodule-windows
 
 used as submodule in
 
