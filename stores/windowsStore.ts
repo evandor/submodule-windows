@@ -8,6 +8,7 @@ import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 /**
  * a pinia store for "Windows".
@@ -112,7 +113,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function setup(trigger: string = "", keepWindowsFromStorage = false) {
-    if (!usePermissionsStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
+    if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
       return
     }
 
