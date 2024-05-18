@@ -7,7 +7,7 @@ import throttledQueue from "throttled-queue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {useFeaturesStore} from "stores/linkedFeaturesStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 /**
  * a pinia store for "Windows".
