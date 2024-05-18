@@ -6,9 +6,8 @@ import _ from "lodash"
 import throttledQueue from "throttled-queue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
 import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 /**
  * a pinia store for "Windows".
