@@ -6,7 +6,7 @@ import _ from "lodash"
 import throttledQueue from "throttled-queue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 
 /**
