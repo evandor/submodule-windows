@@ -58,7 +58,7 @@ class IndexedDbWindowsPersistence {
     //if (!window.title) {
     // try to find matching window
     const allWindows: Window[] = await this.db.getAll('windows') as Window[]
-    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
+    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, (w:Window) => w.id), ',')}]`)
     for (const w of allWindows) {
       if (w.hostList) {
         console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)

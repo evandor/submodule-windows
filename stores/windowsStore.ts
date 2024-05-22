@@ -264,7 +264,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   function windowIdFor(name: string): number | undefined {
-    return _.find([...allWindows.value.keys()], key => {
+    return _.find([...allWindows.value.keys()], (key: number) => {
       const val = allWindows.value.get(key)
       return val?.title === name
     })
