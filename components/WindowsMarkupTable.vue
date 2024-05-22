@@ -130,6 +130,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useSettingsStore} from "stores/settingsStore";
 import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const settingsStore = useSettingsStore()
 
@@ -147,7 +148,7 @@ const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<object[]>([])
 
 const hoveredWindow = ref<number | undefined>(undefined)
-const devMode = ref<boolean>(settingsStore.isEnabled('dev'))
+const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
 
 
 chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
