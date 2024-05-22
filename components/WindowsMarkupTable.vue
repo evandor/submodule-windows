@@ -123,16 +123,14 @@
 
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, PropType, ref, watch, watchEffect} from "vue";
-import _ from "lodash";
 import {useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {useSettingsStore} from "stores/settingsStore";
 import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-
-const settingsStore = useSettingsStore()
+import {FeatureIdent} from "src/models/FeatureIdent";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 
 const props = defineProps({
   rows: {type: Object as PropType<WindowHolder[]>, required: true}
