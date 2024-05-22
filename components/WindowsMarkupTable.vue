@@ -126,7 +126,7 @@ import {onMounted, PropType, ref, watch, watchEffect} from "vue";
 import _ from "lodash";
 import {useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useSettingsStore} from "stores/settingsStore";
 import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";

@@ -47,7 +47,7 @@ import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ref, watchEffect} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 
