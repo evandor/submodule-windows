@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";

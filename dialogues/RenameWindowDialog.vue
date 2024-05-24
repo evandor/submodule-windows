@@ -34,9 +34,9 @@
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 
 defineEmits([
   ...useDialogPluginComponent.emits
