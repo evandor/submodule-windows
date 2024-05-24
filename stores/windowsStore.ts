@@ -105,13 +105,14 @@ export const useWindowsStore = defineStore('windows', () => {
    * initialize store
    */
   async function initialize() {
-    console.debug(" ...initializing windowsStore")
     storage = IndexedDbWindowsPersistence
+    console.log(` ...initializing windowsStore (${storage.getServiceName()})`)
     await storage.init()
     await setup("initialization")
   }
 
   async function setup(trigger: string = "", keepWindowsFromStorage = false) {
+    console.log("===>", useFeaturesStore().activeFeatures)
     if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
       return
     }

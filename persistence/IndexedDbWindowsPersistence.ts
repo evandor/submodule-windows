@@ -6,8 +6,11 @@ import {Window} from "src/windows/models/Window";
 class IndexedDbWindowsPersistence {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
+  getServiceName() {
+    return this.constructor.name
+  }
+
   async init() {
-    console.log(" ...initializing windows IndexedDbStorage database")
     this.db = await this.initDatabase()
     useUiStore().dbReady = true
     return Promise.resolve("")
