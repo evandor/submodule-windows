@@ -9,4 +9,4 @@ DEV_MODE
 
 [//]: # (needed to be shown in github pages setup...)
 
-![screenshot](../../src/windows/docs/imgs/teaser.png)
+<img src="./../src/windows/docs/imgs/teaser.png" alt="drawing" width="400"/>
