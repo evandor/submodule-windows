@@ -7,4 +7,6 @@ DEV_MODE
 
 ## Screenshot
 
-![screenshot](imgs/teaser.png "title")
+[//]: # (needed to be shown in github pages setup...)
+
+![screenshot](../../src/windows/docs/imgs/teaser.png)
