@@ -108,6 +108,8 @@ export const useWindowsStore = defineStore('windows', () => {
     storage = IndexedDbWindowsPersistence
     console.log(` ...initializing windowsStore (${storage.getServiceName()})`)
     await storage.init()
+    // TODO remove after version 0.5.0
+    await storage.migrate()
     await setup("initialization")
   }
 
