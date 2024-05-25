@@ -2,7 +2,6 @@ import {IDBPDatabase, openDB, deleteDB} from "idb";
 import _ from "lodash";
 import {useUiStore} from "src/stores/uiStore";
 import {Window} from "src/windows/models/Window";
-import {Tabset} from "src/tabsets/models/Tabset";
 
 class IndexedDbWindowsPersistence {
 
@@ -32,7 +31,7 @@ class IndexedDbWindowsPersistence {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
-          console.log("creating db windows")
+          console.log(`creating db ${ctx.STORE_IDENT}`)
           db.createObjectStore(ctx.STORE_IDENT);
         }
       }
@@ -149,7 +148,11 @@ class IndexedDbWindowsPersistence {
   async migrate() {
     // 0.4.11 - 0.5.0
     const oldDB = await openDB("db")
+    if (!oldDB || !oldDB.objectStoreNames.contains(this.STORE_IDENT)) {
+      return // no migration necessary, no old data
+    }
     const oldWindows = await oldDB.getAll(this.STORE_IDENT)
+    console.log("oldWindows", oldWindows)
     for(const oldWindow of oldWindows) {
       const optionalWindowInNewDb = await this.db.get(this.STORE_IDENT, oldWindow.id) as Window | undefined
       if (!optionalWindowInNewDb) {
