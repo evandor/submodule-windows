@@ -114,7 +114,6 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function setup(trigger: string = "", keepWindowsFromStorage = false) {
-    console.log("===>", useFeaturesStore().activeFeatures)
     if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
       return
     }
