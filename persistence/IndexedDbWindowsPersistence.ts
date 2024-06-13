@@ -1,6 +1,6 @@
 import {IDBPDatabase, openDB, deleteDB} from "idb";
 import _ from "lodash";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {Window} from "src/windows/models/Window";
 
 class IndexedDbWindowsPersistence {
