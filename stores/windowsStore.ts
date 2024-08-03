@@ -241,7 +241,9 @@ export const useWindowsStore = defineStore('windows', () => {
       chrome.windows.onCreated.addListener(onCreatedListener)
       chrome.windows.onRemoved.addListener(onRemovedListener)
       chrome.windows.onFocusChanged.addListener(onFocusChangedListener)
-      chrome.windows.onBoundsChanged.addListener(onBoundsChangedListener)
+      if (chrome.windows.onBoundsChanged) { // not defined on firefox
+        chrome.windows.onBoundsChanged.addListener(onBoundsChangedListener)
+      }
     }
   }
 
@@ -249,7 +251,9 @@ export const useWindowsStore = defineStore('windows', () => {
     chrome.windows.onCreated.removeListener(onCreatedListener)
     chrome.windows.onRemoved.removeListener(onRemovedListener)
     chrome.windows.onFocusChanged.removeListener(onFocusChangedListener)
-    chrome.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
+    if (chrome.windows.onBoundsChanged) { // not defined on firefox
+      chrome.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
+    }
   }
 
   function windowForId(id: number): Window | undefined {
