@@ -134,6 +134,7 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import _ from "lodash"
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {Window} from "src/windows/models/Window"
 
 const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
@@ -336,7 +337,7 @@ const windowNameRowClass = (row: any) => {
 }
 
 const windowIsManaged = (row: object) => {
-  return _.find(tabsetsMangedWindows.value, tmw => tmw['label' as keyof object] === row['name' as keyof object]) !== undefined
+  return _.find(tabsetsMangedWindows.value, (tmw:object) => tmw['label' as keyof object] === row['name' as keyof object]) !== undefined
 }
 
 </script>
