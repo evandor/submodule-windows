@@ -130,11 +130,10 @@ import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUtils} from "src/core/services/Utils";
-import {Tabset} from "src/tabsets/models/Tabset";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import _ from "lodash"
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Window} from "src/windows/models/Window"
+import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 
 const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
@@ -196,7 +195,8 @@ watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
   windowsToOpenOptions.value = []
   tabsetsMangedWindows.value = []
-  for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
+  const registry = useEntityRegistryStore()
+  for (const ts of registry.tabsetRegistry) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
       const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
