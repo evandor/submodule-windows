@@ -128,12 +128,14 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useUtils} from "src/core/services/Utils";
 import _ from "lodash"
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Window} from "src/windows/models/Window"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 
 const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
@@ -223,8 +225,8 @@ const openNewWindow = (w: object) => {
     chrome.windows.create()
     windowsToOpen.value = ''
   } else if (label && label.trim() !== '') {
-    // useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, false))
-    sendMsg('restore-tabset', {tabsetId: tsId, label: label})
+    // sendMsg('restore-tabset', {tabsetId: tsId, label: label})
+    useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, true))
     windowsToOpen.value = ''
   }
 }
