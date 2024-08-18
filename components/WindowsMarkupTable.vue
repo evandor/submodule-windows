@@ -134,8 +134,6 @@ import _ from "lodash"
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Window} from "src/windows/models/Window"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 
 const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
@@ -225,8 +223,8 @@ const openNewWindow = (w: object) => {
     chrome.windows.create()
     windowsToOpen.value = ''
   } else if (label && label.trim() !== '') {
-    // sendMsg('restore-tabset', {tabsetId: tsId, label: label})
-    useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, true))
+    sendMsg('restore-tabset', {tabsetId: tsId, label: label})
+    //useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, true))
     windowsToOpen.value = ''
   }
 }
