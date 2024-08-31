@@ -173,7 +173,7 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
 
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
   //console.log("***here we are", tabId, removeInfo)
-  useWindowsStore().setup('got window-updated message')
+  useWindowsStore().setup('on removed listener in WindowsMarkupTable')
     .then(() => rows.value = calcWindowRows())
     .catch((err) => handleError(err))
 })

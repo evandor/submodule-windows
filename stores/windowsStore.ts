@@ -117,7 +117,6 @@ export const useWindowsStore = defineStore('windows', () => {
     if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
       return
     }
-
     console.debug(` init chrome windows listeners with trigger ${trigger}`)
 
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
@@ -178,7 +177,6 @@ export const useWindowsStore = defineStore('windows', () => {
     chrome.windows.getCurrent({windowTypes: ['normal'], populate: true}, (window: chrome.windows.Window) => {
       currentChromeWindow.value = window
       if (currentChromeWindow.value && currentChromeWindow.value.id) {
-        //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
         currentWindowName.value = windowNameFor(currentChromeWindow.value.id)
       }
     })
@@ -190,14 +188,14 @@ export const useWindowsStore = defineStore('windows', () => {
       for (const window of currentChromeWindows.value) {
         //console.log("da!!!",window)
         // TODO this is always the "default" window
-        if (currentWindow.id !== window.id) {
-          chrome.contextMenus.create({
-            id: 'move_to|' + window.id,
-            parentId: 'move_to_window',
-            title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
-            contexts: ['all']
-          })
-        }
+        // if (currentWindow.id !== window.id) {
+        //   chrome.contextMenus.create({
+        //     id: 'move_to|' + window.id,
+        //     parentId: 'move_to_window',
+        //     title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
+        //     contexts: ['all']
+        //   })
+        // }
       }
     }
 
