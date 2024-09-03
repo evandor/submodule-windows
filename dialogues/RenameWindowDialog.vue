@@ -11,8 +11,8 @@
       <q-card-section class="q-pt-none">
         <q-input dense v-model="newWindowName" autofocus @keydown.enter="updateWindow()"
                  error-message="Please do not use special Characters, maximum length is 32"
-                 :error="!newWindowNameIsValid" />
-<!--        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>-->
+                 :error="!newWindowNameIsValid"/>
+        <!--        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>-->
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -37,6 +37,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -62,11 +63,18 @@ watchEffect(() => {
 const updateWindow = () => useCommandExecutor()
   .executeFromUi(new RenameWindowCommand(props.windowId, newWindowName.value, props.index))
   .then((result: ExecutionResult<string>) => {
-    onDialogOK({ name: newWindowName.value })
+    onDialogOK({name: newWindowName.value})
   })
 
-const newWindowNameIsValid = computed(() =>
-  newWindowName.value?.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newWindowName.value))
+const newWindowNameIsValid = computed(() => {
+  if (newWindowName.value?.length > 32 || STRIP_CHARS_IN_USER_INPUT.test(newWindowName.value)) {
+    return false
+  }
+  if (useWindowsStore().windowSet.has(newWindowName.value)) {
+    return false
+  }
+  return true
+})
 
 const disableSubmit = (): boolean => {
   return newWindowName.value.trim().length === 0

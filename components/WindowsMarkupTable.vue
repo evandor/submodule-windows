@@ -46,7 +46,7 @@
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td class="text-left" :class="windowNameRowClass(row)"
                 @dblclick.stop="openRenameWindowDialog(row.getId(), row.getName(), row.getIndex())"
-                @click.prevent.stop="openWindow(row.getId())">
+                @click.prevent.stop="openWindow(row)">
               <q-icon v-if="props.rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
                 <q-tooltip class="tooltip-small" v-if="devMode">{{ row.getIndex() }}</q-tooltip>
               </q-icon>
@@ -123,7 +123,7 @@
 
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, PropType, ref, watch, watchEffect} from "vue";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
@@ -135,9 +135,13 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Window} from "src/windows/models/Window"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import AppEventDispatcher from "src/app/AppEventDispatcher";
+import NavigationService from "src/services/NavigationService";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import BrowserApi from "src/app/BrowserApi";
+import ChromeApi from "src/app/BrowserApi";
 
 const {handleError} = useNotificationHandler()
-const {sendMsg} = useUtils()
 
 const props = defineProps({
   rows: {type: Object as PropType<WindowHolder[]>, required: true}
@@ -234,11 +238,22 @@ const openNewWindow = (w: object) => {
   }
 }
 
-const openWindow = (windowId: number) => {
-  if (useWindowsStore().currentChromeWindow?.id !== windowId) {
-    chrome.windows.update(windowId, {drawAttention: true, focused: true},
-      (callback) => {
+const openWindow = (window: WindowHolder) => {
+  console.log("window", window)
+  if (useWindowsStore().currentChromeWindow?.id !== window.getId()) {
+    if (window.getId() && window.getId() >= 0) {
+      chrome.windows.update(window.getId(), {drawAttention: true, focused: true},
+        (callback) => {
+          console.warn("could not open window for", window)
+        })
+    } else {
+      const dummyTabs = _.map(window.hostList, (url: string) => {
+        return new Tab(uid(), BrowserApi.createChromeTabObject("", url))
       })
+      const dummyTabset = new Tabset(uid(), "dummy", dummyTabs)
+      ChromeApi.restore(dummyTabset, undefined, true)
+      //NavigationService.openOrCreateTab(window.hostList, undefined, [], false, false)
+    }
   }
 }
 
@@ -328,21 +343,17 @@ const openRenameWindowDialog = (windowId: number, currentName: string, index: nu
     })
 }
 
-const windowNameRowClass = (row: any) => {
+const windowNameRowClass = (row: WindowHolder) => {
+  if (!row.cw) {
+    return 'text-grey-8'
+  }
   if (useWindowsStore().currentChromeWindow?.id === row.getId()) {
     return row['focused' as keyof object] ? 'text-bold text-italic' : 'text-bold'
   }
   if (row['focused' as keyof object]) {
     return 'text-italic'
   }
-  if (row['state'] === 'minimized') {
-    return 'text-grey-5'
-  }
   return ''
-}
-
-const windowIsManaged = (row: object) => {
-  return _.find(tabsetsMangedWindows.value, (tmw:object) => tmw['label' as keyof object] === row['name' as keyof object]) !== undefined
 }
 
 </script>

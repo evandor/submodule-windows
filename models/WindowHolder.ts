@@ -37,7 +37,7 @@ export class WindowHolder {
   }
 
   public getId() {
-    return this.cw.id || -1
+    return this.cw?.id || -1
   }
 
   public getName() {
@@ -49,7 +49,7 @@ export class WindowHolder {
   }
 
   public getTabsCount() {
-    return this.cw.tabs?.length || 0
+    return this.cw?.tabs?.length || 0
   }
 
 }

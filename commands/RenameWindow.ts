@@ -1,5 +1,5 @@
 import Command from "src/core/domain/Command";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 export class RenameWindowCommand implements Command<string> {
@@ -18,6 +18,12 @@ export class RenameWindowCommand implements Command<string> {
 
       const cw = await chrome.windows.get(this.windowId, {populate: true})//,  (cw) => {
       console.log("cw", cw)
+
+      const existingWindowNames:Set<String> = useWindowsStore().windowSet
+      if (existingWindowNames.has(this.newName)) {
+        return Promise.reject("window name already exists")
+      }
+
       return useWindowsStore().upsertWindow(cw, this.newName.toString().trim(), this.index)
         .then(res => {
           //sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})

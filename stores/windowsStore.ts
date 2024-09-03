@@ -83,7 +83,6 @@ export const useWindowsStore = defineStore('windows', () => {
       const result: WindowHolder[] = _.map(currentChromeWindows.value as chrome.windows.Window[], (cw: chrome.windows.Window) => {
         const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
         const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
-        // const additionalActions: WindowAction[] = []
 
         return WindowHolder.of(
           cw,
@@ -92,10 +91,27 @@ export const useWindowsStore = defineStore('windows', () => {
           windowFromStore?.hostList || [],
           fnc(windowName)
         )
-
       })
 
-      return _.sortBy(result, "index")
+      const otherWindows = _.map(_.filter([...allWindows.value.values()], (w:Window) => {
+        return result.findIndex((wh: WindowHolder) => w.id === wh.getId()) < 0
+      }), ((w: Window) => {
+        console.log("window", w)
+        const windowFromStore: Window | undefined = useWindowsStore().windowForId(w.id || -2)
+        const windowName = useWindowsStore().windowNameFor(w.id || 0) || w.id!.toString()
+        return WindowHolder.of(
+          null as unknown as chrome.windows.Window,
+          windowFromStore?.index || 0,
+          windowName,
+          windowFromStore?.hostList || [],
+          []
+        )
+      }))
+
+      console.log("result", result)
+      console.log("other", otherWindows)
+
+      return _.sortBy(result.concat(otherWindows), "index")
 
 
     })
