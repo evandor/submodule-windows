@@ -129,13 +129,11 @@ import {WindowHolder} from "src/windows/models/WindowHolder";
 import RenameWindowDialog from "src/windows/dialogues/RenameWindowDialog.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {useUtils} from "src/core/services/Utils";
 import _ from "lodash"
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Window} from "src/windows/models/Window"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import AppEventDispatcher from "src/app/AppEventDispatcher";
-import NavigationService from "src/services/NavigationService";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import BrowserApi from "src/app/BrowserApi";
@@ -297,7 +295,7 @@ const calcWindowRows = () => {
 }
 
 const handleDragAndDrop = async (event: any) => {
-  const {moved, added} = event
+  const {moved} = event
 
   if (moved) {
     console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, props.rows, event)

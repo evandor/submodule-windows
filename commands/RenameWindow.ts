@@ -1,5 +1,5 @@
 import Command from "src/core/domain/Command";
-import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 export class RenameWindowCommand implements Command<string> {

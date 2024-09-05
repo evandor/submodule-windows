@@ -53,7 +53,6 @@ const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginCom
 
 const newWindowName = ref(props.currentName)
 const newWindowNameExists = ref(false)
-const hideWarning = ref(false)
 
 watchEffect(() => {
   // TODO

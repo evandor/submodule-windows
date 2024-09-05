@@ -3,7 +3,6 @@ import {computed, ref} from "vue";
 import {useUtils} from "src/core/services/Utils";
 import {Window} from "src/windows/models/Window";
 import _ from "lodash"
-import throttledQueue from "throttled-queue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
@@ -16,17 +15,6 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
  */
 
 let storage = IndexedDbWindowsPersistence
-
-function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (tabToCloseId) {
-        chrome.tabs.remove(tabToCloseId).catch((err) => console.debug(err))
-      }
-      resolve("Success!");
-    }, timeout);
-  });
-}
 
 export const useWindowsStore = defineStore('windows', () => {
 
@@ -200,19 +188,6 @@ export const useWindowsStore = defineStore('windows', () => {
     // add context menus for moving to other window
     if (chrome && chrome.contextMenus) {
       //chrome.windows.getCurrent().then(currentWindow => {
-      const currentWindow: chrome.windows.Window = await chrome.windows.getCurrent()//.then(currentWindow => {
-      for (const window of currentChromeWindows.value) {
-        //console.log("da!!!",window)
-        // TODO this is always the "default" window
-        // if (currentWindow.id !== window.id) {
-        //   chrome.contextMenus.create({
-        //     id: 'move_to|' + window.id,
-        //     parentId: 'move_to_window',
-        //     title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
-        //     contexts: ['all']
-        //   })
-        // }
-      }
     }
 
   }
@@ -272,10 +247,6 @@ export const useWindowsStore = defineStore('windows', () => {
 
   function windowForId(id: number): Window | undefined {
     return allWindows.value.get(id)
-  }
-
-  function currentWindowForId(id: number): chrome.windows.Window | undefined {
-    return currentChromeWindows.value.find(i => i.id === id)
   }
 
   function windowNameFor(id: number) {
@@ -359,45 +330,6 @@ export const useWindowsStore = defineStore('windows', () => {
     })
   }
 
-  function openThrottledInWindow(urls: string[], windowCreateData: object = {focused: true, width: 1024, height: 800}) {
-    console.log("%copenThrottledInWindow...", "color:green")
-    const throttleOnePerXSeconds = throttledQueue(1, 1000, true)
-    chrome.windows.create(windowCreateData, (window: any) => {
-
-      //console.log("%cgot window", "color:green", window.id)
-      useWindowsStore().removeWindowByTitle("%monitoring%")
-      useWindowsStore().upsertWindow(window, "%monitoring%")
-
-      useWindowsStore().screenshotWindow = window.id
-
-      const promises: Promise<any>[] = []
-      for (const u of urls) {
-        if (u.indexOf("${") >= 0) {
-          console.debug("not monitoring url due to placeholder(s)", u)
-          break
-        }
-        const p = throttleOnePerXSeconds(async () => {
-          const createProperties = {windowId: window.id, url: u}
-          //console.log("createProperties", createProperties)
-          chrome.tabs.create(createProperties, (tab: chrome.tabs.Tab) => {
-            closeTabWithTimeout(2000, tab.id)
-          })
-          return closeTabWithTimeout(1000)
-        })
-        promises.push(p)
-      }
-
-      Promise.all(promises)
-        .then(() => {
-          setTimeout(() => {
-            //console.log("setting timeout")
-            chrome.windows.remove(window.id)
-            useWindowsStore().screenshotWindow = null as unknown as number
-          }, 2000)
-        })
-    })
-  }
-
   async function refreshCurrentWindows() {
     console.debug("refreshCurrentWindows")
     currentChromeWindows.value = await chrome.windows.getAll({populate: true})
@@ -457,7 +389,6 @@ export const useWindowsStore = defineStore('windows', () => {
     allWindows,
     addToWindowSet,
     upsertTabsetWindow,
-    refreshTabsetWindow,
-    openThrottledInWindow
+    refreshTabsetWindow
   }
 })

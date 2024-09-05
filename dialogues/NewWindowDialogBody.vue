@@ -42,13 +42,14 @@
 
 <script lang="ts" setup>
 
-import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
+import {QForm, useDialogPluginComponent} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 
+// @ts-ignore
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const props = defineProps({
@@ -57,9 +58,7 @@ const props = defineProps({
 
 const newWindowName = ref('')
 const isValid = ref(false)
-const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
-const windowModel = ref<string>('current')
 const windowOptions = ref<string[]>([])
 
 watchEffect(() => {
