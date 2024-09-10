@@ -6,6 +6,7 @@ export class RenameWindowCommand implements Command<string> {
 
   constructor(
     public windowId: number,
+    public holderId: number | undefined,
     public newName: string,
     public index: number
   ) {
@@ -16,15 +17,16 @@ export class RenameWindowCommand implements Command<string> {
     console.log("setWindowName", this.windowId, this.newName)
     if (this.newName && this.newName.toString().trim().length > 0) {
 
-      const cw = await chrome.windows.get(this.windowId, {populate: true})//,  (cw) => {
-      console.log("cw", cw)
-
       const existingWindowNames:Set<String> = useWindowsStore().windowSet
       if (existingWindowNames.has(this.newName)) {
         return Promise.reject("window name already exists")
       }
 
-      return useWindowsStore().upsertWindow(cw, this.newName.toString().trim(), this.index)
+      const cw = await chrome.windows.get(this.windowId, {populate: true})
+        .catch((err) => console.info("no window for this.windowId"))
+      console.log("cw", cw)
+
+      return useWindowsStore().upsertWindow(cw, this.holderId, this.newName.toString().trim(), this.index)
         .then(res => {
           //sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
           return this.newName.toString().trim()

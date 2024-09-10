@@ -1,5 +1,8 @@
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
+/**
+ * the entity to be stored in the DB
+ */
 export class Window {
   created: number
 

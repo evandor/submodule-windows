@@ -46,7 +46,8 @@ defineEmits([
 const props = defineProps({
   windowId: {type: Number, required: true},
   currentName: {type: String, required: true},
-  index: {type: Number, required: true}
+  index: {type: Number, required: true},
+  holderId: {type: Number, required: false}
 })
 
 const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginComponent()
@@ -60,12 +61,15 @@ watchEffect(() => {
 })
 
 const updateWindow = () => useCommandExecutor()
-  .executeFromUi(new RenameWindowCommand(props.windowId, newWindowName.value, props.index))
+  .executeFromUi(new RenameWindowCommand(props.windowId, props.holderId, newWindowName.value, props.index))
   .then((result: ExecutionResult<string>) => {
     onDialogOK({name: newWindowName.value})
   })
 
 const newWindowNameIsValid = computed(() => {
+  if (newWindowName.value === props.currentName) {
+    return true
+  }
   if (newWindowName.value?.length > 32 || STRIP_CHARS_IN_USER_INPUT.test(newWindowName.value)) {
     return false
   }
@@ -76,7 +80,7 @@ const newWindowNameIsValid = computed(() => {
 })
 
 const disableSubmit = (): boolean => {
-  return newWindowName.value.trim().length === 0
+  return newWindowName.value.trim().length === 0 || newWindowName.value === props.currentName
 }
 
 </script>

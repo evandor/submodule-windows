@@ -39,43 +39,42 @@
           :group="{ name: 'tabs', pull: 'clone' }"
           @change="(event:any) => handleDragAndDrop(event)">
           <tr v-for="row in props.rows"
-              @mouseover="hoveredWindow = row.getId()"
+              @mouseover="hoveredWindow = row.holderId"
               @mouseleave="hoveredWindow = undefined"
               style="max-height:15px">
             <!--                        <td>{{ row.getIndex() }}</td>-->
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td class="text-left" :class="windowNameRowClass(row)"
-                @dblclick.stop="openRenameWindowDialog(row.getId(), row.getName(), row.getIndex())"
+                @dblclick.stop="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())"
                 @click.prevent.stop="openWindow(row)">
               <q-icon v-if="props.rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
                 <q-tooltip class="tooltip-small" v-if="devMode">{{ row.getIndex() }}</q-tooltip>
               </q-icon>
-              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row.getId()">
+              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row.holderId">
                 {{ row.getName() }}
-                <q-tooltip class="tooltip-small" v-if="devMode">{{ row.getId() }}</q-tooltip>
+                <q-tooltip class="tooltip-small" v-if="devMode">{{ row.holderId }}</q-tooltip>
               </span>
 
             </td>
-            <td :data-testid="'windowDataColumn_tabsCount_' + row.getId()">
+            <td :data-testid="'windowDataColumn_tabsCount_' + row.holderId">
               {{ row.getTabsCount() }}
             </td>
             <td>
-              <template v-if="hoveredWindow === row.getId()">
+
+              <template v-if="hoveredWindow === row.holderId">
+
                 <q-icon v-if="'minimized' !== row['state' as keyof object]"
                         name="visibility_off"
-                        class="q-ml-sm text-warning cursor-pointer"
-                        @click="minimizeWindow(row.getId())">
-                  <q-tooltip :delay=500 class="tooltip-small">Hide Window</q-tooltip>
+                        :color="row.cw ? 'warning' : 'grey'"
+                        class="q-ml-sm"
+                        :class="row.cw ? 'cursor-pointer':''"
+                        @click="row.cw ? minimizeWindow(row.holderId) : ''">
+                  <q-tooltip :delay=500 class="tooltip-small">Hide Window{{hoveredWindow}}/{{row.cw}}</q-tooltip>
                 </q-icon>
-                <!--                <q-icon name="open_in_new"-->
-                <!--                        class="q-ml-sm cursor-pointer"-->
-                <!--                        :class="useWindowsStore().currentChromeWindow?.id === row.getId() ? 'text-grey' : 'text-blue-8 cursor-pointer'"-->
-                <!--                        @click="openWindow(row.getId())">-->
-                <!--                  <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>-->
-                <!--                </q-icon>-->
+
                 <q-icon name="edit"
                         class="q-ml-sm text-blue-8 cursor-pointer"
-                        @click="openRenameWindowDialog(row.getId(), row.getName(), row.getIndex())">
+                        @click="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())">
                   <q-tooltip :delay=500 class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
 
@@ -87,11 +86,14 @@
                     size="xs"
                     class="q-ml-sm"
                     :class="item.disabled ? item.color : item.color + ' cursor-pointer'">
-                    <q-tooltip v-if="item.tooltip" :delay=500 class="tooltip-small">{{ item.tooltip }}</q-tooltip>
+                    <q-tooltip v-if="item.tooltip" :delay=500 class="tooltip-small">{{
+                        item.tooltip
+                      }}/{{ item.disabled }}
+                    </q-tooltip>
                   </q-icon>
                 </template>
 
-                <q-icon v-if="useWindowsStore().currentChromeWindows.length === 1"
+                <q-icon v-if="useWindowsStore().currentChromeWindows.length === 1 && row.cw"
                         name="o_close"
                         class="q-ml-sm text-red-8"
                         :disabled="true">
@@ -100,7 +102,7 @@
                 <q-icon v-else
                         name="o_close"
                         class="q-ml-sm text-red-8 cursor-pointer"
-                        @click="closeWindow(row.getId())">
+                        @click="closeWindow(row)">
                   <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
                 </q-icon>
 
@@ -145,7 +147,7 @@ const props = defineProps({
   rows: {type: Object as PropType<WindowHolder[]>, required: true}
 })
 
-const emits = defineEmits(['wasClicked','recalculateWindows'])
+const emits = defineEmits(['wasClicked', 'recalculateWindows'])
 
 const $q = useQuasar()
 
@@ -167,12 +169,6 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
   rows.value = calcWindowRows()
 })
 
-//console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
-//chrome.runtime.onMessage.addListener(windowsUpdatedListener)
-// chrome.windows.onCreated.addListener((w:chrome.windows.Window) => updateWindows())
-// chrome.windows.onRemoved.addListener((wId:number) => updateWindows())
-
-
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
   //console.log("***here we are", tabId, removeInfo)
   useWindowsStore().setup('on removed listener in WindowsMarkupTable')
@@ -181,18 +177,7 @@ chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRem
 })
 
 chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
-  //console.log("***here we are2", tab)
-  // useWindowsStore().setup('got window-updated message')
-  //   .then(() => rows.value = calcWindowRows())
-  //   .catch((err) => handleError(err))
 })
-
-// chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-//   //console.log("***here we are3", tab)
-//   useWindowsStore().setup('got window-updated message')
-//     .then(() => rows.value = calcWindowRows())
-//     .catch((err) => handleError(err))
-// })
 
 watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
@@ -257,13 +242,22 @@ const openWindow = (window: WindowHolder) => {
 
 
 const minimizeWindow = (windowId: number) => {
+  console.log("hier")
   chrome.windows.update(windowId, {state: "minimized"})
   useWindowsStore().refreshCurrentWindows()
 }
 
-const closeWindow = (windowId: number) => {
-  chrome.windows.remove(windowId)
-  useWindowsStore().refreshCurrentWindows()
+const closeWindow = (windowHolder: WindowHolder) => {
+  console.log("closing", windowHolder)
+  if (windowHolder.cw && windowHolder.cw.id) {
+    chrome.windows.remove(windowHolder.cw.id)
+    useWindowsStore().refreshCurrentWindows()
+  } else if (!windowHolder.cw) {
+    useWindowsStore().removeWindow(windowHolder.holderId)
+    // useWindowsStore().refreshCurrentWindows()
+    // rows.value = calcWindowRows()
+    emits('recalculateWindows')
+  }
 }
 
 const calcWindowRows = () => {
@@ -295,7 +289,7 @@ const calcWindowRows = () => {
 }
 
 const handleDragAndDrop = async (event: any) => {
-  const {moved} = event
+  const {moved, added} = event
 
   if (moved) {
     console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, props.rows, event)
@@ -329,15 +323,9 @@ const handleDragAndDrop = async (event: any) => {
 }
 
 const openRenameWindowDialog = (windowId: number, currentName: string, index: number) => {
-  $q.dialog({component: RenameWindowDialog, componentProps: {windowId, currentName, index}})
+  $q.dialog({component: RenameWindowDialog, componentProps: {windowId, holderId: windowId, currentName, index}})
     .onOk((name: string) => {
-      console.log("hier", name)
       emits('recalculateWindows')
-      //rows.value = calcWindowRows()
-      // if (useWindowsStore().currentChromeWindow?.id === windowId) {
-      //   useWindowsStore().currentWindowName = name
-      //   //sendMsg('window-updated', {initiated: "RenameWindowDialog#updateWindow"})
-      // }
     })
 }
 
@@ -345,7 +333,7 @@ const windowNameRowClass = (row: WindowHolder) => {
   if (!row.cw) {
     return 'text-grey-8'
   }
-  if (useWindowsStore().currentChromeWindow?.id === row.getId()) {
+  if (useWindowsStore().currentChromeWindow?.id === row.holderId) {
     return row['focused' as keyof object] ? 'text-bold text-italic' : 'text-bold'
   }
   if (row['focused' as keyof object]) {
