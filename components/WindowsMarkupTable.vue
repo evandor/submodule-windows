@@ -223,9 +223,9 @@ const openNewWindow = (w: object) => {
 
 const openWindow = (window: WindowHolder) => {
   console.log("window", window)
-  if (useWindowsStore().currentChromeWindow?.id !== window.getId()) {
-    if (window.getId() && window.getId() >= 0) {
-      chrome.windows.update(window.getId(), {drawAttention: true, focused: true},
+  if (useWindowsStore().currentChromeWindow?.id !== window.holderId) {
+    if (window.holderId && window.holderId >= 0) {
+      chrome.windows.update(window.holderId, {drawAttention: true, focused: true},
         (callback) => {
           console.warn("could not open window for", window)
         })
