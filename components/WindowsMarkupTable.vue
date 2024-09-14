@@ -289,7 +289,7 @@ const calcWindowRows = () => {
 }
 
 const handleDragAndDrop = async (event: any) => {
-  const {moved, added} = event
+  const {moved} = event
 
   if (moved) {
     console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, props.rows, event)
