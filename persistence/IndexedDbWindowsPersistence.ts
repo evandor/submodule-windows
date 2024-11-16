@@ -65,13 +65,13 @@ class IndexedDbWindowsPersistence {
     //if (!window.title) {
     // try to find matching window
     const allWindows: Window[] = await this.db.getAll(this.STORE_IDENT) as Window[]
-    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, (w:Window) => w.id), ',')}]`)
+    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, (w: Window) => w.id), ',')}]`)
     for (const w of allWindows) {
       if (w.hostList) {
-        console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
+        //console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
         const intersection = new Set([...window.hostList].filter(x => (new Set(w.hostList).has(x))));
         console.log("intersection", intersection, intersection.size === window.hostList.length, intersection.size === w.hostList.length)
-        if (intersection.size === window.hostList.length && intersection.size === w.hostList.length) {
+        if (this.similarEnough(intersection, window.hostList, w.hostList)) {
           // reuse existing
           const useId = window.id
           const oldId = w.id
@@ -81,6 +81,7 @@ class IndexedDbWindowsPersistence {
           await this.db.delete(this.STORE_IDENT, oldId)
           break
         }
+
       }
     }
     //}
@@ -93,6 +94,15 @@ class IndexedDbWindowsPersistence {
         console.log("error adding window", window, err)
       }
     }
+  }
+
+  private similarEnough(intersection: Set<string>, hostList: string[], hostListFromDb: string[]) {
+    // intersection.size === window.hostList.length && intersection.size === w.hostList.length
+    if (intersection.size === 0) {
+      return false
+    }
+    console.log("similarity", hostList.length / intersection.size)
+    return hostList.length / intersection.size >= 0.8 || hostList.length / intersection.size <= 1.2
   }
 
   // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
@@ -147,19 +157,19 @@ class IndexedDbWindowsPersistence {
 
   async migrate() {
     // 0.4.11 - 0.5.0
-    const oldDB = await openDB("db")
-    if (!oldDB || !oldDB.objectStoreNames.contains(this.STORE_IDENT)) {
-      return // no migration necessary, no old data
-    }
-    const oldWindows = await oldDB.getAll(this.STORE_IDENT)
-    console.log("oldWindows", oldWindows)
-    for(const oldWindow of oldWindows) {
-      const optionalWindowInNewDb = await this.db.get(this.STORE_IDENT, oldWindow.id) as Window | undefined
-      if (!optionalWindowInNewDb) {
-        console.log("migrating old tabset", oldWindow.id, oldWindow.name)
-        await this.db.add(this.STORE_IDENT, oldWindow, oldWindow.id)
-      }
-    }
+    // const oldDB = await openDB("db")
+    // if (!oldDB || !oldDB.objectStoreNames.contains(this.STORE_IDENT)) {
+    //   return // no migration necessary, no old data
+    // }
+    // const oldWindows = await oldDB.getAll(this.STORE_IDENT)
+    // console.log("oldWindows", oldWindows)
+    // for(const oldWindow of oldWindows) {
+    //   const optionalWindowInNewDb = await this.db.get(this.STORE_IDENT, oldWindow.id) as Window | undefined
+    //   if (!optionalWindowInNewDb) {
+    //     console.log("migrating old tabset", oldWindow.id, oldWindow.name)
+    //     await this.db.add(this.STORE_IDENT, oldWindow, oldWindow.id)
+    //   }
+    // }
   }
 
 }
