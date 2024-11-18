@@ -101,6 +101,9 @@ class IndexedDbWindowsPersistence {
     if (intersection.size === 0) {
       return false
     }
+    if (hostList.length <= 2) {
+      return false
+    }
     console.log("similarity", hostList.length / intersection.size)
     return hostList.length / intersection.size >= 0.8 || hostList.length / intersection.size <= 1.2
   }
