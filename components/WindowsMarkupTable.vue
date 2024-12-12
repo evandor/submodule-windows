@@ -73,7 +73,7 @@
                 </q-icon>
 
                 <q-icon name="edit"
-                        class="q-ml-sm text-blue-8 cursor-pointer"
+                        class="q-ml-sm text-accent cursor-pointer"
                         @click="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())">
                   <q-tooltip :delay=500 class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
