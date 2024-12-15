@@ -1,4 +1,4 @@
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
 import {Window} from "src/windows/models/Window"
 
 export class WindowAction {

@@ -43,7 +43,7 @@
 <script lang="ts" setup>
 
 import {QForm, useDialogPluginComponent} from "quasar";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
