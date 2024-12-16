@@ -49,7 +49,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 
-// @ts-ignore
+// @ts-expect-error
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const props = defineProps({

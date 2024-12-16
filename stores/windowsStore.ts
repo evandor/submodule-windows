@@ -263,7 +263,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function currentWindowFor(windowToOpen: string): Promise<chrome.windows.Window | undefined> {
     if (windowToOpen === 'current' && chrome && chrome.windows) {
-      // @ts-ignore
+      // @ts-expect-error
       return await chrome.windows.getCurrent()
     } else if (windowIdFor(windowToOpen)) {
       const potentialWindowId = windowIdFor(windowToOpen)
