@@ -92,7 +92,7 @@ export const useWindowsStore = defineStore('windows', () => {
           return result.findIndex((wh: WindowHolder) => w.id === wh.holderId) < 0 && w.hostList.length > 0
         }), ((w: Window) => {
           const windowFromStore: Window | undefined = useWindowsStore().windowForId(w.id || -2)
-          const windowName = useWindowsStore().windowNameFor(w.id || 0) || w.id!.toString()
+          const windowName = useWindowsStore().windowNameFor(w.id || 0) || w.id.toString()
           if (windowFromStore) {
             windowFromStore.title = windowName
             return WindowHolder.of(windowFromStore, undefined, windowFromStore ? windowFromStore.id : -4, fnc(windowName))
@@ -150,7 +150,7 @@ export const useWindowsStore = defineStore('windows', () => {
       // index handling
       const indexFromDb = tabsetWindowFromStorage.index
       const indicesDiffer = indexFromDb !== index
-      let indexToUse = index++
+      const indexToUse = index++
 
       if (indicesDiffer) {
         try {
@@ -236,7 +236,7 @@ export const useWindowsStore = defineStore('windows', () => {
     }
   }
 
-  async function resetListeners() {
+  function resetListeners() {
     chrome.windows.onCreated.removeListener(onCreatedListener)
     chrome.windows.onRemoved.removeListener(onRemovedListener)
     chrome.windows.onFocusChanged.removeListener(onFocusChangedListener)
@@ -263,7 +263,6 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function currentWindowFor(windowToOpen: string): Promise<chrome.windows.Window | undefined> {
     if (windowToOpen === 'current' && chrome && chrome.windows) {
-      // @ts-expect-error
       return await chrome.windows.getCurrent()
     } else if (windowIdFor(windowToOpen)) {
       const potentialWindowId = windowIdFor(windowToOpen)
@@ -384,7 +383,7 @@ export const useWindowsStore = defineStore('windows', () => {
     return storage.getWindow(windowId).then((w: Window | undefined) => {
       if (w) {
         w.index = indexToUse
-        var allWindow = allWindows.value.get(windowId)
+        const allWindow = allWindows.value.get(windowId)
         if (allWindow) {
           allWindow.index = indexToUse
         }
