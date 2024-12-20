@@ -39,6 +39,7 @@
           :group="{ name: 'tabs', pull: 'clone' }"
           @change="(event:any) => handleDragAndDrop(event)">
           <tr v-for="row in props.rows"
+              :key="row.index"
               @mouseover="hoveredWindow = row.holderId"
               @mouseleave="hoveredWindow = undefined"
               style="max-height:15px">
@@ -78,9 +79,10 @@
                   <q-tooltip :delay=500 class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
 
-                <template v-for="item in row.additionalActions">
+                <template v-for="item in row.additionalActions" :key="item.icon">
                   <q-icon
                     @click.stop="emits('wasClicked', {action:item.action, window: row})"
+
                     :name="item.icon"
                     :disable="item.disabled"
                     size="xs"
@@ -151,7 +153,7 @@ const emits = defineEmits(['wasClicked', 'recalculateWindows'])
 
 const $q = useQuasar()
 
-const rows = ref<object[]>([])
+const windowRows = ref<object[]>([])
 const currentWindowName = ref('---')
 
 const windowsToOpen = ref<string>('')
@@ -161,18 +163,18 @@ const hoveredWindow = ref<number | undefined>(undefined)
 const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
 
 onMounted(() => {
-  rows.value = calcWindowRows()
+  windowRows.value = calcWindowRows()
 })
 
 watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
   //console.log("windows changed", newWindows, oldWindows)
-  rows.value = calcWindowRows()
+  windowRows.value = calcWindowRows()
 })
 
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
   //console.log("***here we are", tabId, removeInfo)
   useWindowsStore().setup('on removed listener in WindowsMarkupTable')
-    .then(() => rows.value = calcWindowRows())
+    .then(() => windowRows.value = calcWindowRows())
     .catch((err) => handleError(err))
 })
 
@@ -187,7 +189,7 @@ watchEffect(() => {
   for (const ts of registry.tabsetRegistry) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
-      const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
+      const found = _.find(windowRows.value, (r: object) => ts.window === r['name' as keyof object])
       if (!found) {
         windowsToOpenOptions.value.push({label: ts.window, value: ts.id})
       }
