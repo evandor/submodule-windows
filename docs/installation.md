@@ -16,4 +16,3 @@ git submodule add -b main https://github.com/evandor/submodule-windows.git src/w
 ### main
 
 the default branch, used e.g. in tabsets
-

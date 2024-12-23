@@ -14,5 +14,5 @@ to avoid dependencies on other submodules, this command can be used to trigger a
 opened which contains a list of tabs (as used in the tabsets module)
 
 ```typescript
-sendMsg('restore-tabset', {tabsetId: tsId, label: label})
+sendMsg('restore-tabset', { tabsetId: tsId, label: label })
 ```

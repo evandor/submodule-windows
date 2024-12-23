@@ -1,4 +1,4 @@
-import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
+import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 
 /**
  * the entity to be stored in the DB
@@ -12,7 +12,9 @@ export class Window {
     public title: string | undefined = undefined,
     public index: number = 0,
     public open = false,
-    public hostList: string[] = []) { // could not use sets due to issues
+    public hostList: string[] = [],
+  ) {
+    // could not use sets due to issues
 
     if (!Window.nameIsShortEnough) {
       throw new Error(`Window name '${name}' is too long`)
@@ -23,10 +25,9 @@ export class Window {
     this.title = this.title?.replace(STRIP_CHARS_IN_USER_INPUT, '')
   }
 
-  static nameIsShortEnough = (val: string) => val ? val.length <= 32 : true
-
+  static nameIsShortEnough = (val: string) => (val ? val.length <= 32 : true)
 }
 
 Window.prototype.toString = function tabToString() {
-  return `Window: {id=${this.id}, browserWindow=${this.browserWindow !== undefined}, title=${this.title}, index=${this.index}, open=${this.open}, #hostList=${this.hostList.length}}`;
-};
+  return `Window: {id=${this.id}, browserWindow=${this.browserWindow !== undefined}, title=${this.title}, index=${this.index}, open=${this.open}, #hostList=${this.hostList.length}}`
+}

@@ -9,48 +9,51 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <q-input dense v-model="newWindowName" autofocus @keydown.enter="updateWindow()"
-                 error-message="Please do not use special Characters, maximum length is 32"
-                 :error="!newWindowNameIsValid"/>
+        <q-input
+          dense
+          v-model="newWindowName"
+          autofocus
+          @keydown.enter="updateWindow()"
+          error-message="Please do not use special Characters, maximum length is 32"
+          :error="!newWindowNameIsValid"
+        />
         <!--        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>-->
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn label="Cancel" size="sm" color="accent" @click="onDialogCancel"/>
-        <q-btn label="Update" size="sm" color="warning"
-               :disable="disableSubmit()"
-               v-close-popup
-               @click="updateWindow()"/>
+        <q-btn label="Cancel" size="sm" color="accent" @click="onDialogCancel" />
+        <q-btn
+          label="Update"
+          size="sm"
+          color="warning"
+          :disable="disableSubmit()"
+          v-close-popup
+          @click="updateWindow()"
+        />
       </q-card-actions>
-
-
     </q-card>
   </q-dialog>
-
 </template>
 
 <script lang="ts" setup>
+import { computed, ref, watchEffect } from 'vue'
+import { useDialogPluginComponent } from 'quasar'
+import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { RenameWindowCommand } from 'src/windows/commands/RenameWindow'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
 
-import {computed, ref, watchEffect} from "vue";
-import {useDialogPluginComponent} from "quasar";
-import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
-
-defineEmits([
-  ...useDialogPluginComponent.emits
-])
+defineEmits([...useDialogPluginComponent.emits])
 
 const props = defineProps({
-  windowId: {type: Number, required: true},
-  currentName: {type: String, required: true},
-  index: {type: Number, required: true},
-  holderId: {type: Number, required: false}
+  windowId: { type: Number, required: true },
+  currentName: { type: String, required: true },
+  index: { type: Number, required: true },
+  holderId: { type: Number, required: false },
 })
 
-const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+const { dialogRef, onDialogOK, onDialogHide, onDialogCancel } = useDialogPluginComponent()
 
 const newWindowName = ref(props.currentName)
 const newWindowNameExists = ref(false)
@@ -60,11 +63,14 @@ watchEffect(() => {
   newWindowNameExists.value = false //!!useTabsetsStore().existingInTabset(newWindowName.value);
 })
 
-const updateWindow = () => useCommandExecutor()
-  .executeFromUi(new RenameWindowCommand(props.windowId, props.holderId, newWindowName.value, props.index))
-  .then((result: ExecutionResult<string>) => {
-    onDialogOK({name: newWindowName.value})
-  })
+const updateWindow = () =>
+  useCommandExecutor()
+    .executeFromUi(
+      new RenameWindowCommand(props.windowId, props.holderId, newWindowName.value, props.index),
+    )
+    .then((result: ExecutionResult<string>) => {
+      onDialogOK({ name: newWindowName.value })
+    })
 
 const newWindowNameIsValid = computed(() => {
   if (newWindowName.value === props.currentName) {
@@ -82,7 +88,6 @@ const newWindowNameIsValid = computed(() => {
 const disableSubmit = (): boolean => {
   return newWindowName.value.trim().length === 0 || newWindowName.value === props.currentName
 }
-
 </script>
 
 <style lang="sass" scoped>

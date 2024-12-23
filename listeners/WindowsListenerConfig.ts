@@ -1,14 +1,13 @@
-import {useUtils} from "src/core/services/Utils";
+import { useUtils } from 'src/core/services/Utils'
 
-const {inBexMode} = useUtils()
+const { inBexMode } = useUtils()
 
 class WindowsListenerConfig {
-
-  onWindowsCreatedListener: undefined | ((cw: chrome.windows.Window) => void)  = undefined
+  onWindowsCreatedListener: undefined | ((cw: chrome.windows.Window) => void) = undefined
 
   addOnWindowsCreatedListener(listener: (cw: chrome.windows.Window) => void) {
     if (inBexMode()) {
-      console.debug(" ...initializing windowsStore Listeners!")
+      console.debug(' ...initializing windowsStore Listeners!')
       this.onWindowsCreatedListener = listener
       chrome.windows.onCreated.addListener(listener)
     }
@@ -20,8 +19,6 @@ class WindowsListenerConfig {
       this.onWindowsCreatedListener = undefined
     }
   }
-
 }
 
-export default new WindowsListenerConfig();
-
+export default new WindowsListenerConfig()
