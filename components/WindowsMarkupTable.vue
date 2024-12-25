@@ -145,23 +145,23 @@
 </template>
 
 <script lang="ts" setup>
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { onMounted, PropType, ref, watch, watchEffect } from 'vue'
-import { uid, useQuasar } from 'quasar'
-import { VueDraggableNext } from 'vue-draggable-next'
-import { WindowHolder } from 'src/windows/models/WindowHolder'
-import RenameWindowDialog from 'src/windows/dialogues/RenameWindowDialog.vue'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import _ from 'lodash'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
-import { Window } from 'src/windows/models/Window'
-import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
+import { uid, useQuasar } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import { Tab } from 'src/tabsets/models/Tab'
 import BrowserApi from 'src/app/BrowserApi'
 import ChromeApi from 'src/app/BrowserApi'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import RenameWindowDialog from 'src/windows/dialogues/RenameWindowDialog.vue'
+import { Window } from 'src/windows/models/Window'
+import { WindowHolder } from 'src/windows/models/WindowHolder'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { onMounted, PropType, ref, watch, watchEffect } from 'vue'
+import { VueDraggableNext } from 'vue-draggable-next'
 
 const { handleError } = useNotificationHandler()
 

@@ -1,13 +1,13 @@
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
-import { useUtils } from 'src/core/services/Utils'
-import { Window } from 'src/windows/models/Window'
 import _ from 'lodash'
-import throttledQueue from 'throttled-queue'
+import { defineStore } from 'pinia'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useUtils } from 'src/core/services/Utils'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { Window } from 'src/windows/models/Window'
 import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
 import IndexedDbWindowsPersistence from 'src/windows/persistence/IndexedDbWindowsPersistence'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import throttledQueue from 'throttled-queue'
+import { computed, ref } from 'vue'
 
 /**
  * a pinia store for "Windows".
