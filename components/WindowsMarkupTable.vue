@@ -8,30 +8,23 @@
             <th class="text-left">Window Name</th>
             <th class="text-right">#Tabs</th>
             <th class="text-right q-pr-none" v-if="windowsToOpenOptions.length > 0">
-              <span class="cursor-pointer"
-                ><q-icon name="open_in_new" class="q-mr-xs" />Open Window
-              </span>
+              <span class="cursor-pointer"><q-icon name="open_in_new" class="q-mr-xs" />Open Window </span>
               <q-menu :offset="[0, 7]" fit>
                 <q-list dense style="min-width: 250px">
                   <q-item clickable v-close-popup>
-                    <q-item-section
-                      @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
+                    <q-item-section @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
                       >Open new Window
                     </q-item-section>
                   </q-item>
                   <q-separator v-if="windowsToOpenOptions.length > 0" />
                   <q-item clickable v-close-popup v-for="w in windowsToOpenOptions">
-                    <q-item-section @click="openNewWindow(w)">{{
-                      w['label' as keyof object]
-                    }}</q-item-section>
+                    <q-item-section @click="openNewWindow(w)">{{ w['label' as keyof object] }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
             </th>
             <th class="text-right q-pr-none" v-else>
-              <span
-                class="cursor-pointer"
-                @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
+              <span class="cursor-pointer" @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
                 ><q-icon name="open_in_new" class="q-mr-xs" />Open Window
               </span>
             </th>
@@ -43,29 +36,21 @@
           tag="tbody"
           :list="props.rows"
           :group="{ name: 'tabs', pull: 'clone' }"
-          @change="(event: any) => handleDragAndDrop(event)"
-        >
+          @change="(event: any) => handleDragAndDrop(event)">
           <tr
             v-for="row in props.rows"
             :key="row.index"
             @mouseover="hoveredWindow = row.holderId"
             @mouseleave="hoveredWindow = undefined"
-            style="max-height: 15px"
-          >
+            style="max-height: 15px">
             <!--                        <td>{{ row.getIndex() }}</td>-->
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td
               class="text-left"
               :class="windowNameRowClass(row)"
               @dblclick.stop="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())"
-              @click.prevent.stop="openWindow(row)"
-            >
-              <q-icon
-                v-if="props.rows.length > 1"
-                name="drag_indicator"
-                class="q-mr-sm"
-                style="cursor: move"
-              >
+              @click.prevent.stop="openWindow(row)">
+              <q-icon v-if="props.rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor: move">
                 <q-tooltip class="tooltip-small" v-if="devMode">{{ row.getIndex() }}</q-tooltip>
               </q-icon>
               <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row.holderId">
@@ -84,18 +69,14 @@
                   :color="row.cw ? 'warning' : 'grey'"
                   class="q-ml-sm"
                   :class="row.cw ? 'cursor-pointer' : ''"
-                  @click="row.cw ? minimizeWindow(row.holderId) : ''"
-                >
-                  <q-tooltip :delay="500" class="tooltip-small"
-                    >Hide Window{{ hoveredWindow }}/{{ row.cw }}</q-tooltip
-                  >
+                  @click="row.cw ? minimizeWindow(row.holderId) : ''">
+                  <q-tooltip :delay="500" class="tooltip-small">Hide Window{{ hoveredWindow }}/{{ row.cw }}</q-tooltip>
                 </q-icon>
 
                 <q-icon
                   name="edit"
                   class="q-ml-sm text-accent cursor-pointer"
-                  @click="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())"
-                >
+                  @click="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())">
                   <q-tooltip :delay="500" class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
 
@@ -106,8 +87,7 @@
                     :disable="item.disabled"
                     size="xs"
                     class="q-ml-sm"
-                    :class="item.disabled ? item.color : item.color + ' cursor-pointer'"
-                  >
+                    :class="item.disabled ? item.color : item.color + ' cursor-pointer'">
                     <q-tooltip v-if="item.tooltip" :delay="500" class="tooltip-small"
                       >{{ item.tooltip }}/{{ item.disabled }}
                     </q-tooltip>
@@ -118,18 +98,10 @@
                   v-if="useWindowsStore().currentChromeWindows.length === 1 && row.cw"
                   name="o_close"
                   class="q-ml-sm text-red-8"
-                  :disabled="true"
-                >
-                  <q-tooltip :delay="500" class="tooltip-small"
-                    >Last Window cannot be closed</q-tooltip
-                  >
+                  :disabled="true">
+                  <q-tooltip :delay="500" class="tooltip-small">Last Window cannot be closed</q-tooltip>
                 </q-icon>
-                <q-icon
-                  v-else
-                  name="o_close"
-                  class="q-ml-sm text-red-8 cursor-pointer"
-                  @click="closeWindow(row)"
-                >
+                <q-icon v-else name="o_close" class="q-ml-sm text-red-8 cursor-pointer" @click="closeWindow(row)">
                   <q-tooltip :delay="500" class="tooltip-small">Close this window</q-tooltip>
                 </q-icon>
               </template>
@@ -319,11 +291,7 @@ const handleDragAndDrop = async (event: any) => {
   const { moved } = event
 
   if (moved) {
-    console.log(
-      `moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`,
-      props.rows,
-      event,
-    )
+    console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, props.rows, event)
     // //useWindowsStore().moveWindow(rows.value, moved.element.id, moved.oldIndex, moved.newIndex)
     // const windowIndex = moved.element.id
     // //console.log("moving window", windowIndex)

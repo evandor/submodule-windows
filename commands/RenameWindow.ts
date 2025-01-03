@@ -29,9 +29,7 @@ export class RenameWindowCommand implements Command<string> {
           //sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
           return this.newName.toString().trim()
         })
-        .then((newName: any) =>
-          Promise.resolve(new ExecutionResult(newName, 'Window Name Updated')),
-        )
+        .then((newName: any) => Promise.resolve(new ExecutionResult(newName, 'Window Name Updated')))
         .catch((err) => Promise.reject(err))
     }
     return Promise.reject('name was not valid')

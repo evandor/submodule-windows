@@ -38,17 +38,11 @@ class IndexedDbWindowsPersistence {
   }
 
   async addWindow(window: Window): Promise<any> {
-    console.debug(
-      'adding window',
-      `id=${window.id}, index=${window.index}, #hostList=${window.hostList.length}`,
-    )
+    console.debug('adding window', `id=${window.id}, index=${window.index}, #hostList=${window.hostList.length}`)
     if (!this.db) {
       return Promise.resolve('db for adding window not ready yet...')
     }
-    const existingWindowForWindowId: Window | undefined = await this.db.get(
-      this.STORE_IDENT,
-      window.id,
-    )
+    const existingWindowForWindowId: Window | undefined = await this.db.get(this.STORE_IDENT, window.id)
     if (existingWindowForWindowId) {
       const mergedWindow = new Window(
         window.id,
@@ -59,9 +53,7 @@ class IndexedDbWindowsPersistence {
         window.hostList,
       )
       console.debug(`merging windows to ${mergedWindow.toString()}`)
-      this.db
-        .put(this.STORE_IDENT, mergedWindow, window.id)
-        .catch((err) => console.error('error', err))
+      this.db.put(this.STORE_IDENT, mergedWindow, window.id).catch((err) => console.error('error', err))
       return Promise.resolve('not added, updated hostList instead')
 
       // not bad, simply resolve

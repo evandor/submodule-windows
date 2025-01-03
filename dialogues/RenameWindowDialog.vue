@@ -15,8 +15,7 @@
           autofocus
           @keydown.enter="updateWindow()"
           error-message="Please do not use special Characters, maximum length is 32"
-          :error="!newWindowNameIsValid"
-        />
+          :error="!newWindowNameIsValid" />
         <!--        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>-->
       </q-card-section>
 
@@ -28,8 +27,7 @@
           color="warning"
           :disable="disableSubmit()"
           v-close-popup
-          @click="updateWindow()"
-        />
+          @click="updateWindow()" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -65,9 +63,7 @@ watchEffect(() => {
 
 const updateWindow = () =>
   useCommandExecutor()
-    .executeFromUi(
-      new RenameWindowCommand(props.windowId, props.holderId, newWindowName.value, props.index),
-    )
+    .executeFromUi(new RenameWindowCommand(props.windowId, props.holderId, newWindowName.value, props.index))
     .then((result: ExecutionResult<string>) => {
       onDialogOK({ name: newWindowName.value })
     })
