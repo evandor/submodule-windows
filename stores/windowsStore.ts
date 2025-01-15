@@ -112,7 +112,7 @@ export const useWindowsStore = defineStore('windows', () => {
    */
   async function initialize() {
     storage = IndexedDbWindowsPersistence
-    console.debug(` ...initializing windowsStore (${storage.getServiceName()})`)
+    // console.debug(` ...initializing windowsStore (${storage.getServiceName()})`)
     await storage.init()
     // TODO remove after version 0.5.0
     await storage.migrate()
@@ -225,14 +225,14 @@ export const useWindowsStore = defineStore('windows', () => {
         await storage.updateWindow(newWindow)
         refreshCurrentWindows()
       } else {
-        console.log(`could not update window #${windowId}`)
+        console.debug(`could not update window #${windowId}`)
       }
     }
   }
 
   function initListeners() {
     if (inBexMode()) {
-      console.debug(' ...initializing windowsStore Listeners')
+      // console.debug(' ...initializing windowsStore Listeners')
       chrome.windows.onCreated.addListener(onCreatedListener)
       chrome.windows.onRemoved.addListener(onRemovedListener)
       chrome.windows.onFocusChanged.addListener(onFocusChangedListener)

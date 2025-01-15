@@ -7,7 +7,7 @@ class WindowsListenerConfig {
 
   addOnWindowsCreatedListener(listener: (cw: chrome.windows.Window) => void) {
     if (inBexMode()) {
-      console.debug(' ...initializing windowsStore Listeners!')
+      // console.debug(' ...initializing windowsStore Listeners!')
       this.onWindowsCreatedListener = listener
       chrome.windows.onCreated.addListener(listener)
     }

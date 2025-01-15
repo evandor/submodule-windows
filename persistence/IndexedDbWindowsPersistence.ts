@@ -24,7 +24,7 @@ class IndexedDbWindowsPersistence {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    console.debug(' ...about to initialize indexedDB (Windows)')
+    //console.debug(' ...about to initialize indexedDB (Windows)')
     const ctx = this
     return await openDB('windowsDB', 1, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
