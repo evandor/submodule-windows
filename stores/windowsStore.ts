@@ -337,9 +337,9 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function upsertTabsetWindow(window: Window) {
-    console.debug(
-      `upserting window: id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`,
-    )
+    // console.debug(
+    //   `upserting window: id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`,
+    // )
     await storage.upsertWindow(window)
   }
 
