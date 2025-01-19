@@ -199,7 +199,7 @@ export const useWindowsStore = defineStore('windows', () => {
     )
 
     const res = _.sortBy(browserWindows.concat(otherWindows), 'index')
-    console.log('>>>res<<<', res)
+    // console.log('>>>res<<<', res)
     return res
   })
 
@@ -213,7 +213,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
     currentBrowserWindows.value = browserWindows
-    console.debug(` initializing current chrome windows with ${currentBrowserWindows.value?.length} window(s)`)
+    //console.debug(` initializing current chrome windows with ${currentBrowserWindows.value?.length} window(s)`)
 
     if (!keepWindowsFromStorage) {
       // adding potentially new windows to storage
@@ -243,7 +243,7 @@ export const useWindowsStore = defineStore('windows', () => {
       }
       allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
     }
-    console.log('allWindows set to ', allWindows.value)
+    //console.log('allWindows set to ', allWindows.value)
 
     // add title to windowSet if existing
     for (const w of allWindows.value.values()) {
@@ -299,7 +299,7 @@ export const useWindowsStore = defineStore('windows', () => {
    */
   async function onUpdate(windowId: number) {
     if (windowId >= 0) {
-      const windowFromDb: Window | undefined = windowForId(windowId)
+      const windowFromDb: Window | undefined = windowForId(windowId, 'windowsStore onupdate')
       if (windowFromDb) {
         //console.debug(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`)
         const chromeWindow = await chrome.windows.get(windowId, { populate: true })

@@ -1,5 +1,4 @@
 import { IDBPDatabase, openDB } from 'idb'
-import _ from 'lodash'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { Window } from 'src/windows/models/Window'
 
@@ -55,12 +54,12 @@ class IndexedDbWindowsPersistence {
     // ok, no matching window id, let's try to find matching window by other means
     const allDbWindows: Window[] = (await this.db.getAll(this.STORE_IDENT)) as Window[]
     //console.log('allWindows', allWindows)
-    console.debug(
-      `adding ${window.toString()} to list [${_.join(
-        _.map(allDbWindows, (w: Window) => w.id),
-        ',',
-      )}]`,
-    )
+    // console.debug(
+    //   `adding ${window.toString()} to list [${_.join(
+    //     _.map(allDbWindows, (w: Window) => w.id),
+    //     ',',
+    //   )}]`,
+    // )
 
     //}
     try {

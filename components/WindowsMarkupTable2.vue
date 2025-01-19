@@ -210,7 +210,7 @@ watchEffect(() => {
   for (const ts of registry.tabsetRegistry) {
     if (ts.window && ts.window !== 'current' && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({ label: ts.window, value: ts.id })
-      const found = _.find(windowHolderRows.value, (r: object) => ts.window === r['name' as keyof object])
+      const found = _.find(windowHolderRows.value, (r: WindowHolder) => ts.window === r.name && r.window?.open)
       if (!found) {
         windowsToOpenOptions.value.push({ label: ts.window, value: ts.id })
       }
