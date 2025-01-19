@@ -21,7 +21,7 @@ export class RenameWindowCommand implements Command<string> {
       const cw = await chrome.windows
         .get(this.windowId, { populate: true })
         .catch((err) => console.info('no window for this.windowId'))
-      console.log('cw', cw)
+      //console.log('cw', cw)
 
       return useWindowsStore()
         .upsertWindow(cw, this.holderId, this.newName.toString().trim(), this.index)
@@ -34,4 +34,8 @@ export class RenameWindowCommand implements Command<string> {
     }
     return Promise.reject('name was not valid')
   }
+}
+
+RenameWindowCommand.prototype.toString = function cmdToString() {
+  return `RenameWindowCommand: {windowId=${this.windowId}, holderId=${this.holderId}, newName: ${this.newName}, index: ${this.index}`
 }

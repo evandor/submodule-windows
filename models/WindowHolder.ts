@@ -26,7 +26,7 @@ export class WindowHolder {
     // could not use sets due to issues
 
     this.created = new Date().getTime()
-    this.name = window?.title || '?'
+    this.name = window?.title || '' + cw?.id || '???'
     this.name = this.name?.replace(STRIP_CHARS_IN_USER_INPUT, '')
     if (!WindowHolder.nameIsShortEnough) {
       throw new Error(`Window name '${name}' is too long`)
