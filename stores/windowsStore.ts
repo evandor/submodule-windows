@@ -198,7 +198,11 @@ export const useWindowsStore = defineStore('windows', () => {
       },
     )
 
-    const res = _.sortBy(browserWindows.concat(otherWindows), 'index')
+    const openWindows = browserWindows.concat(otherWindows).filter((wh: WindowHolder) => {
+      //console.log('checking openwindow', wh, wh.cw)
+      return wh.cw
+    })
+    const res = _.sortBy(openWindows, 'index')
     // console.log('>>>res<<<', res)
     return res
   })
@@ -269,9 +273,6 @@ export const useWindowsStore = defineStore('windows', () => {
     if (w && !w.title) {
       await removeWindow(windowId)
     }
-    //await setup('onRemove')
-    // const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
-    // currentBrowserWindows.value = browserWindows
     await updateStorageFromBrowserWindows()
     const windowsFromStorage = await storage.getWindows()
     allWindows.value = new Map()
@@ -445,7 +446,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {
-    //console.log("updating window index", windowId, indexToUse)
+    console.log('updating window index', windowId, indexToUse)
     return storage.getWindow(windowId).then((w: Window | undefined) => {
       if (w) {
         w.index = indexToUse
@@ -461,19 +462,19 @@ export const useWindowsStore = defineStore('windows', () => {
     })
   }
 
-  async function refreshTabsetWindow(windowId: number) {
-    try {
-      //console.log("refreshing tabset window", windowId)
-      const tabsetWindow = await storage.getWindow(windowId)
-      const chromeWindow = await chrome.windows.get(windowId, { populate: true })
-      if (tabsetWindow && chromeWindow) {
-        tabsetWindow.hostList = calcHostList(chromeWindow.tabs || [])
-        await storage.updateWindow(tabsetWindow)
-      }
-    } catch (err) {
-      console.log('got error', err)
-    }
-  }
+  // async function refreshTabsetWindow(windowId: number) {
+  //   try {
+  //     //console.log("refreshing tabset window", windowId)
+  //     const tabsetWindow = await storage.getWindow(windowId)
+  //     const chromeWindow = await chrome.windows.get(windowId, { populate: true })
+  //     if (tabsetWindow && chromeWindow) {
+  //       tabsetWindow.hostList = calcHostList(chromeWindow.tabs || [])
+  //       await storage.updateWindow(tabsetWindow)
+  //     }
+  //   } catch (err) {
+  //     console.log('got error', err)
+  //   }
+  // }
 
   /**
    * in some cases, an outside event (e.g. RenameWindow) can change the underlying database
@@ -511,7 +512,6 @@ export const useWindowsStore = defineStore('windows', () => {
     windowSet,
     upsertWindow,
     removeWindow,
-    removeWindowByTitle,
     refreshCurrentWindows,
     windowFor,
     currentWindowFor,
@@ -519,7 +519,7 @@ export const useWindowsStore = defineStore('windows', () => {
     allWindows,
     addToWindowSet,
     upsertTabsetWindow,
-    refreshTabsetWindow,
+    updateWindowIndex,
     lastUpdate,
     setLastUpdate,
   }

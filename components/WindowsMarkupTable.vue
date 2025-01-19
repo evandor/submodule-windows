@@ -4,7 +4,6 @@
       <q-markup-table class="q-ma-none" dense flat>
         <thead>
           <tr>
-            <!--                    <th></th>-->
             <th class="text-left" style="min-width: 180px">Window Name</th>
             <th class="text-right">#Tabs</th>
             <th class="text-right q-pr-none" v-if="windowsToOpenOptions.length > 0">
@@ -43,8 +42,6 @@
             @mouseover="hoveredWindow = row.holderId"
             @mouseleave="hoveredWindow = undefined"
             style="max-height: 15px">
-            <!--                        <td>{{ row.getIndex() }}</td>-->
-            <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td
               class="text-left"
               :class="windowNameRowClass(row)"
@@ -132,7 +129,7 @@ import { Tabset } from 'src/tabsets/models/Tabset'
 import RenameWindowDialog from 'src/windows/dialogues/RenameWindowDialog.vue'
 import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { onMounted, ref, watch, watchEffect } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
 const emits = defineEmits(['wasClicked']) //, 'recalculateWindows'])
@@ -141,7 +138,6 @@ const $q = useQuasar()
 
 const windowHolderRows = ref<WindowHolder[]>([])
 
-// const windowRows = ref<object[]>([])
 const currentWindowName = ref('---')
 
 const windowsToOpen = ref<string>('')
@@ -149,10 +145,6 @@ const windowsToOpenOptions = ref<{ label: string; value: string }[]>([])
 const tabsetsMangedWindows = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
 const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
-
-onMounted(() => {
-  // windowRows.value = calcWindowRows()
-})
 
 const windowIsManaged = (windowName: string) => {
   return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
@@ -171,31 +163,17 @@ const getAdditionalActions = (windowName: string) => {
 watch(
   () => useWindowsStore().lastUpdate,
   (n: number, o: number) => {
-    //console.log(' --- last update2 ---', n, o)
     if (n > o) {
       windowHolderRows.value = useWindowsStore().getWindowsForMarkupTable(getAdditionalActions)
     }
   },
 )
 
-watch(
-  () => useWindowsStore().currentBrowserWindows,
-  (newWindows, oldWindows) => {
-    //console.log("windows changed", newWindows, oldWindows)
-    // windowRows.value = calcWindowRows()
-  },
-)
-
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-  //console.log("***here we are", tabId, removeInfo)
   if (removeInfo.isWindowClosing) {
     return
   }
   useWindowsStore().setLastUpdate()
-  // useWindowsStore()
-  //   .setup('on removed listener in WindowsMarkupTable')
-  //   .then(() => (windowRows.value = calcWindowRows()))
-  //   .catch((err) => handleError(err))
 })
 
 chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
@@ -245,22 +223,17 @@ const additionalActionWasClicked = (event: any) => {
 }
 
 const openNewWindow = async (w: { label: string; value: string }) => {
-  console.log('windows to open set to ', w)
+  //console.log('windows to open set to ', w)
   const label = w.label
   const tsId = w.value
   if (tsId === 'newWindow') {
     await chrome.windows.create()
     windowsToOpen.value = ''
   } else if (label && label.trim() !== '') {
-    //sendMsg('restore-tabset', {tabsetId: tsId, label: label})
-    //useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, true))
     AppEventDispatcher.dispatchEvent('restore-tabset', {
       tabsetId: tsId,
       label: label,
-    }).then(() => {
-      // seems too early to call that
-      //useWindowsStore().setup('restore-tabset-dispatch-event')
-    })
+    }).catch((err: any) => console.warn('got error', err))
     windowsToOpen.value = ''
   }
 }
@@ -278,14 +251,12 @@ const openWindow = (window: WindowHolder) => {
       })
       const dummyTabset = new Tabset(uid(), 'dummy', dummyTabs)
       ChromeApi.restore(dummyTabset, undefined, true)
-      //NavigationService.openOrCreateTab(window.hostList, undefined, [], false, false)
     }
   }
 }
 
 const minimizeWindow = (windowId: number) => {
   chrome.windows.update(windowId, { state: 'minimized' })
-  //useWindowsStore().refreshCurrentWindows('minimizeWindow')
   useWindowsStore().setLastUpdate()
 }
 
@@ -296,72 +267,34 @@ const closeWindow = (windowHolder: WindowHolder) => {
     useWindowsStore().refreshCurrentWindows('closeWindow')
   } else if (!windowHolder.cw) {
     useWindowsStore().removeWindow(windowHolder.holderId)
-    //emits('recalculateWindows')
   }
 }
-
-// const calcWindowRows = () => {
-//   console.log('calculating window Rows')
-//   const result = _.map(
-//     useWindowsStore().currentBrowserWindows as chrome.windows.Window[],
-//     (cw: chrome.windows.Window) => {
-//       const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2, 'WindowsMarkupTable2')
-//
-//       // console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs, #${windowFromStore?.hostList.size} hosts) -> #${windowFromStore?.index}`)
-//
-//       return {
-//         id: cw.id,
-//         index: windowFromStore?.index || 0,
-//         tabsCount: cw.tabs?.length || 0,
-//         name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString(),
-//         windowHeight: cw['height' as keyof object],
-//         windowWidth: cw['width' as keyof object],
-//         focused: cw.focused,
-//         alwaysOnTop: cw.alwaysOnTop,
-//         incognito: cw.incognito,
-//         sessionId: cw.sessionId,
-//         state: cw.state,
-//         type: cw.type,
-//         windowIcon: '*',
-//         hostList: windowFromStore?.hostList,
-//       }
-//     },
-//   )
-//
-//   return _.sortBy(result, 'index')
-// }
 
 const handleDragAndDrop = async (event: any) => {
   const { moved } = event
 
   if (moved) {
+    console.log('moved', moved)
     console.log(
       `moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`,
       windowHolderRows.value,
       event,
     )
-    // //useWindowsStore().moveWindow(rows.value, moved.element.id, moved.oldIndex, moved.newIndex)
-    // const windowIndex = moved.element.id
-    // //console.log("moving window", windowIndex)
-    // //const theWindows = getSortedWindows(windowForId);
-    //
-    // //console.log("*** theWindows", theWindows)
-    // const oldIndex = moved.oldIndex
-    // const newIndex = moved.newIndex
-    //
-    // //console.log("moving", windowIndex, oldIndex, newIndex)
-    // if (oldIndex >= 0 && rows.value.length > 0) {
-    //   console.log("old rows", _.map(rows.value, r => r['id' as keyof object] + "("+r['name' as keyof object]+"):" + r['index' as keyof object]))
-    //   const newOrder = _.map(rows.value, r => r['id' as keyof object] as number)
-    //   const startIndex = rows.value[0]['index' as keyof object]
-    //   let index = 0//
-    //   console.log("newOrder", newOrder, startIndex)
-    //   for (const r of newOrder) {
-    //     await useWindowsStore().updateWindowIndex(r, index++)
-    //   }
-    // }
-    // rows.value = calcWindowRows()
-    // sendMsg('window-updated', {initiated: "SidePanelWindowMarkupTable#handleDragAndDrop"})
+    const windowIndex = moved.element.id
+
+    const oldIndex = moved.oldIndex
+    const newIndex = moved.newIndex
+
+    console.log('moving', windowIndex, oldIndex, newIndex)
+    if (oldIndex >= 0 && windowHolderRows.value.length > 0) {
+      const newOrder = _.map(windowHolderRows.value, (r: WindowHolder) => r.holderId as number)
+      const startIndex = windowHolderRows.value[0] ? windowHolderRows.value[0].index : 0
+      let index = 0 //
+      //console.log('newOrder', newOrder, startIndex)
+      for (const r of newOrder) {
+        await useWindowsStore().updateWindowIndex(r, index++)
+      }
+    }
   } else {
     console.log('unhandled event!', event)
   }
