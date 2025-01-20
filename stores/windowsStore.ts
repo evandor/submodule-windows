@@ -64,6 +64,10 @@ export const useWindowsStore = defineStore('windows', () => {
    */
   const windowSet = ref<Set<string>>(new Set())
 
+  const devices = ref<chrome.sessions.Device[]>([])
+
+  const recentlyClosedSessions = ref<chrome.sessions.Session[]>([])
+
   /**
    * initialize store
    */
@@ -198,10 +202,23 @@ export const useWindowsStore = defineStore('windows', () => {
       },
     )
 
-    const openWindows = browserWindows.concat(otherWindows).filter((wh: WindowHolder) => {
-      //console.log('checking openwindow', wh, wh.cw)
-      return wh.cw
-    })
+    // sessions
+    let sessions: WindowHolder[] = []
+    // if (useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)) {
+    //   //const devices = await chrome.sessions.getDevices()
+    //   sessions = recentlyClosedSessions.value.map((s: chrome.sessions.Session) => {
+    //     console.log('checking session', s)
+    //     return WindowHolder.of(null as unknown as Window, s.window, s.lastModified, [])
+    //   })
+    // }
+
+    const openWindows = browserWindows
+      .concat(otherWindows)
+      .concat(sessions)
+      .filter((wh: WindowHolder) => {
+        //console.log('checking openwindow', wh, wh.cw)
+        return wh.cw
+      })
     const res = _.sortBy(openWindows, 'index')
     // console.log('>>>res<<<', res)
     return res
@@ -262,6 +279,13 @@ export const useWindowsStore = defineStore('windows', () => {
         currentWindowName.value = windowNameFor(currentBrowserWindow.value.id)
       }
     })
+
+    if (useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)) {
+      devices.value = await chrome.sessions.getDevices()
+      console.log('got devices', devices.value)
+      recentlyClosedSessions.value = await chrome.sessions.getRecentlyClosed()
+      console.log('got recentlyClosedSessions', recentlyClosedSessions.value)
+    }
 
     lastUpdate.value = new Date().getTime()
   }
