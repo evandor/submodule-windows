@@ -150,7 +150,11 @@ export const useWindowsStore = defineStore('windows', () => {
           }
         }
       }
-      console.log('similar window', similarWindowFromDb)
+
+      if (similarWindowFromDb) {
+        console.log('similar window', similarWindowFromDb)
+      }
+
       if (similarWindowFromDb) {
         // reuse existing
         const oldId = similarWindowFromDb.id
