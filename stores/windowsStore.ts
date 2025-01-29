@@ -360,7 +360,7 @@ export const useWindowsStore = defineStore('windows', () => {
   function windowForId(id: number, logMsg?: string): Window | undefined {
     const result = allWindows.value.get(id)
     if (!result) {
-      console.log(`getting window for id ${id} failed, called from ${logMsg || '?'}`, allWindows.value)
+      //console.log(`getting window for id ${id} failed, called from ${logMsg || '?'}`, allWindows.value)
     }
     return result
   }
