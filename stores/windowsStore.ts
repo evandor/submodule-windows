@@ -16,7 +16,7 @@ import { computed, ref } from 'vue'
 let storage = IndexedDbWindowsPersistence
 
 export const useWindowsStore = defineStore('windows', () => {
-  const { inBexMode, sendMsg, calcHostList } = useUtils()
+  const { inBexMode, sendMsg, calcHostList, addListenerOnce } = useUtils()
 
   const onWindowCreatedListener = (window: chrome.windows.Window) => onWindowCreate(window)
   const onRemovedListener = (windowId: number) => onRemoved(windowId)
@@ -90,8 +90,10 @@ export const useWindowsStore = defineStore('windows', () => {
       }
 
       // tab listener
-      chrome.tabs.onUpdated.addListener(onTabUpdatedListener)
-      chrome.tabs.onRemoved.addListener(onTabRemovedListener)
+      addListenerOnce(chrome.tabs.onUpdated, onTabUpdatedListener)
+      addListenerOnce(chrome.tabs.onRemoved, onTabRemovedListener)
+
+      //chrome.tabs.onRemoved.addListener(onTabRemovedListener)
     }
   }
 
@@ -106,8 +108,8 @@ export const useWindowsStore = defineStore('windows', () => {
         chrome.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
       }
       // tab listeners
-      chrome.tabs.onUpdated.removeListener(onTabUpdatedListener)
-      chrome.tabs.onRemoved.removeListener(onTabRemovedListener)
+      // chrome.tabs.onUpdated.removeListener(onTabUpdatedListener)
+      //chrome.tabs.onRemoved.removeListener(onTabRemovedListener)
     }
   }
 
@@ -117,60 +119,22 @@ export const useWindowsStore = defineStore('windows', () => {
     setLastUpdate()
   }
 
+  // #region snippet
   /**
    * when a new window is created with the restore tabset command, tabs are added one by one.
    * We listen to those events and try to figure out if the new window should be assigned the
    * name of an existing window from the windows-Database.
    */
   async function onTabUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-    if (info.status === 'complete') {
-      console.log('onTabUpdated', number, info)
-      const tabsWindowId = chromeTab.windowId
-      const browserWindow = await chrome.windows.get(tabsWindowId, { populate: true })
-      console.log('browserWindow', browserWindow)
-      const browserTabs: string[] = browserWindow.tabs
-        ? browserWindow.tabs.map((t: chrome.tabs.Tab) => t.url || '')
-        : []
-      //console.log('browserTabs', browserTabs)
-
-      let maxSimilarity = 0
-      let similarWindowFromDb = null
-      const dbWindows = await storage.getWindows()
-      for (const dbWindow of dbWindows) {
-        if (dbWindow.hostList) {
-          const intersection = new Set([...browserTabs].filter((x) => new Set(dbWindow.hostList).has(x)))
-          //console.log('intersection', intersection, intersection.size, dbWindow.title)
-          const similarity = getSimilarity(intersection, browserTabs, dbWindow.hostList)
-          if (similarity > maxSimilarity && dbWindow.title) {
-            maxSimilarity = similarity
-            console.log('max similarity for named window set to', similarity)
-            if (maxSimilarity > 0.8) {
-              similarWindowFromDb = dbWindow
-            }
-          }
-        }
-      }
-
-      if (similarWindowFromDb) {
-        console.log('similar window', similarWindowFromDb)
-      }
-
-      if (similarWindowFromDb) {
-        // reuse existing
-        const oldId = similarWindowFromDb.id
-        const useId = browserWindow.id
-        if (useId && useId !== oldId) {
-          similarWindowFromDb.id = useId
-          console.log('replacing old window ' + oldId + ' with ' + JSON.stringify(similarWindowFromDb))
-          //await this.db.delete(this.STORE_IDENT, oldId)
-          await storage.deleteWindow(oldId)
-          await storage.addWindow(similarWindowFromDb)
-        }
-      }
+    if (info.status !== 'complete') {
+      return
     }
+    console.debug(`==> tabUpdate: ${chromeTab.url?.substring(0, 40)}`)
+    await checkSimilarity(chromeTab.windowId)
     currentBrowserWindows.value = await chrome.windows.getAll({ populate: true })
     setLastUpdate()
   }
+  // #endregion snippet
 
   const getWindowsForMarkupTable = computed(() => (fnc: (name: string) => WindowAction[] = (a: string) => []) => {
     const browserWindows: WindowHolder[] = _.map(
@@ -351,7 +315,9 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function onFocused(windowId: number) {
-    console.debug(`onFocused ${windowId}`)
+    if (windowId !== -1) {
+      console.debug(`onFocused ${windowId}`)
+    }
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
     currentBrowserWindows.value = browserWindows
     lastUpdate.value = new Date().getTime()
@@ -516,6 +482,46 @@ export const useWindowsStore = defineStore('windows', () => {
     return browserList.length === 0 || dbList.length === 0
       ? 0
       : Math.min(intersection.size / browserList.length, intersection.size / dbList.length)
+  }
+
+  async function checkSimilarity(tabsWindowId: number) {
+    const browserWindow = await chrome.windows.get(tabsWindowId, { populate: true })
+    const browserTabs: string[] = browserWindow.tabs ? browserWindow.tabs.map((t: chrome.tabs.Tab) => t.url || '') : []
+
+    let maxSimilarity = 0
+    let similarWindowFromDb = null
+    const dbWindows = await storage.getWindows()
+    for (const dbWindow of dbWindows) {
+      if (dbWindow.hostList) {
+        const intersection = new Set([...browserTabs].filter((x) => new Set(dbWindow.hostList).has(x)))
+        //console.log('intersection', intersection, intersection.size, dbWindow.title)
+        const similarity = getSimilarity(intersection, browserTabs, dbWindow.hostList)
+        if (similarity > maxSimilarity && dbWindow.title) {
+          maxSimilarity = similarity
+          console.log('max similarity for named window set to', similarity)
+          if (maxSimilarity > 0.8) {
+            similarWindowFromDb = dbWindow
+          }
+        }
+      }
+    }
+
+    if (similarWindowFromDb) {
+      console.log('similar window', similarWindowFromDb)
+    }
+
+    if (similarWindowFromDb) {
+      // reuse existing
+      const oldId = similarWindowFromDb.id
+      const useId = browserWindow.id
+      if (useId && useId !== oldId) {
+        similarWindowFromDb.id = useId
+        console.log('replacing old window ' + oldId + ' with ' + JSON.stringify(similarWindowFromDb))
+        //await this.db.delete(this.STORE_IDENT, oldId)
+        await storage.deleteWindow(oldId)
+        await storage.addWindow(similarWindowFromDb)
+      }
+    }
   }
 
   async function updateStorageFromBrowserWindows() {
