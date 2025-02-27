@@ -250,9 +250,9 @@ export const useWindowsStore = defineStore('windows', () => {
 
     if (useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)) {
       devices.value = await chrome.sessions.getDevices()
-      console.log('got devices', devices.value)
+      //console.log('got devices', devices.value)
       recentlyClosedSessions.value = await chrome.sessions.getRecentlyClosed()
-      console.log('got recentlyClosedSessions', recentlyClosedSessions.value)
+      //console.log('got recentlyClosedSessions', recentlyClosedSessions.value)
     }
 
     lastUpdate.value = new Date().getTime()
@@ -271,18 +271,18 @@ export const useWindowsStore = defineStore('windows', () => {
     for (const storageWindow of windowsFromStorage) {
       allWindows.value.set(storageWindow.id, storageWindow)
     }
-    console.log('all windows set to', allWindows.value)
+    //console.log('all windows set to', allWindows.value)
   }
 
   async function onWindowCreate(window: chrome.windows.Window) {
-    console.log('onWindowCreated', window, allWindows.value)
+    //console.log('onWindowCreated', window, allWindows.value)
     await updateStorageFromBrowserWindows()
     const windowsFromStorage = await storage.getWindows()
     allWindows.value = new Map()
     for (const storageWindow of windowsFromStorage) {
       allWindows.value.set(storageWindow.id, storageWindow)
     }
-    console.log('all windows set to', allWindows.value)
+    // console.log('all windows set to', allWindows.value)
   }
 
   /**
