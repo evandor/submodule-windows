@@ -498,7 +498,7 @@ export const useWindowsStore = defineStore('windows', () => {
         const similarity = getSimilarity(intersection, browserTabs, dbWindow.hostList)
         if (similarity > maxSimilarity && dbWindow.title) {
           maxSimilarity = similarity
-          console.log('max similarity for named window set to', similarity)
+          //console.log('max similarity for named window set to', similarity)
           if (maxSimilarity > 0.8) {
             similarWindowFromDb = dbWindow
           }
