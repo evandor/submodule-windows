@@ -53,7 +53,7 @@ const props = defineProps({
 
 const { dialogRef, onDialogOK, onDialogHide, onDialogCancel } = useDialogPluginComponent()
 
-const newWindowName = ref(props.currentName)
+const newWindowName = ref<string>(props.currentName)
 const newWindowNameExists = ref(false)
 
 watchEffect(() => {
