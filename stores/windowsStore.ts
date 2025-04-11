@@ -315,9 +315,9 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function onFocused(windowId: number) {
-    if (windowId !== -1) {
-      console.debug(`onFocused ${windowId}`)
-    }
+    // if (windowId !== -1) {
+    //   console.debug(`onFocused ${windowId}`)
+    // }
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
     currentBrowserWindows.value = browserWindows
     lastUpdate.value = new Date().getTime()
