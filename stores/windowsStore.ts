@@ -114,7 +114,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function onTabRemoved(tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-    console.log('onTabRemoved', tabId, removeInfo)
+    //console.log(`tabRemoved tabId: ${tabId}, windowId: ${removeInfo.windowId}`)
     currentBrowserWindows.value = await chrome.windows.getAll({ populate: true })
     setLastUpdate()
   }
@@ -129,7 +129,7 @@ export const useWindowsStore = defineStore('windows', () => {
     if (info.status !== 'complete') {
       return
     }
-    console.debug(`==> tabUpdate: ${chromeTab.url?.substring(0, 40)}`)
+    //console.debug(`tabUpdate: ${chromeTab.url?.substring(0, 40)}`)
     await checkSimilarity(chromeTab.windowId)
     currentBrowserWindows.value = await chrome.windows.getAll({ populate: true })
     setLastUpdate()
