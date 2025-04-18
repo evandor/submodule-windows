@@ -81,16 +81,22 @@ export const useWindowsStore = defineStore('windows', () => {
   function initListeners() {
     if (inBexMode()) {
       // window listeners
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onCreated.addListener(onWindowCreatedListener)
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onRemoved.addListener(onRemovedListener)
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onFocusChanged.addListener(onFocusChangedListener)
       if (chrome.windows.onBoundsChanged) {
         // not defined on firefox
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         chrome.windows.onBoundsChanged.addListener(onBoundsChangedListener)
       }
 
       // tab listener
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       addListenerOnce(chrome.tabs.onUpdated, onTabUpdatedListener)
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       addListenerOnce(chrome.tabs.onRemoved, onTabRemovedListener)
 
       //chrome.tabs.onRemoved.addListener(onTabRemovedListener)
@@ -100,13 +106,18 @@ export const useWindowsStore = defineStore('windows', () => {
   function removeListener() {
     if (inBexMode()) {
       // window listeners
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onCreated.removeListener(onWindowCreatedListener)
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onRemoved.removeListener(onRemovedListener)
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       chrome.windows.onFocusChanged.removeListener(onFocusChangedListener)
       if (chrome.windows.onBoundsChanged) {
         // not defined on firefox
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         chrome.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
       }
+
       // tab listeners
       // chrome.tabs.onUpdated.removeListener(onTabUpdatedListener)
       //chrome.tabs.onRemoved.removeListener(onTabRemovedListener)
