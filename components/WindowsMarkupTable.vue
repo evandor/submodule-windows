@@ -287,7 +287,7 @@ const handleDragAndDrop = async (event: any) => {
 
     console.log('moving', windowIndex, oldIndex, newIndex)
     if (oldIndex >= 0 && windowHolderRows.value.length > 0) {
-      const newOrder = _.map(windowHolderRows.value, (r: WindowHolder) => r.holderId as number)
+      const newOrder = _.map(windowHolderRows.value, (r: WindowHolder) => r.holderId)
       const startIndex = windowHolderRows.value[0] ? windowHolderRows.value[0].index : 0
       let index = 0 //
       //console.log('newOrder', newOrder, startIndex)
