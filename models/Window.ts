@@ -15,13 +15,7 @@ export class Window {
     public hostList: string[] = [],
   ) {
     // could not use sets due to issues
-
-    if (!Window.nameIsShortEnough) {
-      throw new Error(`Window name '${name}' is too long`)
-    }
-
     this.created = new Date().getTime()
-
     this.title = this.title?.replace(STRIP_CHARS_IN_USER_INPUT, '')
   }
 
