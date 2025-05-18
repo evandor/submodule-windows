@@ -66,7 +66,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   const devices = ref<chrome.sessions.Device[]>([])
 
-  const recentlyClosedSessions = ref<chrome.sessions.Session[]>([])
+  // const recentlyClosedSessions = ref<chrome.sessions.Session[]>([])
 
   /**
    * initialize store
@@ -152,7 +152,7 @@ export const useWindowsStore = defineStore('windows', () => {
       currentBrowserWindows.value as chrome.windows.Window[],
       (browserWindow: chrome.windows.Window) => {
         const windowFromStore: Window | undefined = windowForId(browserWindow.id || -2)
-        const windowName = windowNameFor(browserWindow.id || 0) || browserWindow.id!.toString()
+        const windowName = windowNameFor(browserWindow.id || 0) || browserWindow.id?.toString() || '???'
         // console.log('browserWindow', browserWindow, windowFromStore, windowName)
 
         if (windowFromStore) {
@@ -259,12 +259,12 @@ export const useWindowsStore = defineStore('windows', () => {
       }
     })
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)) {
-      devices.value = await chrome.sessions.getDevices()
-      //console.log('got devices', devices.value)
-      recentlyClosedSessions.value = await chrome.sessions.getRecentlyClosed()
-      //console.log('got recentlyClosedSessions', recentlyClosedSessions.value)
-    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)) {
+    //   devices.value = await chrome.sessions.getDevices()
+    //   //console.log('got devices', devices.value)
+    //   recentlyClosedSessions.value = await chrome.sessions.getRecentlyClosed()
+    //   //console.log('got recentlyClosedSessions', recentlyClosedSessions.value)
+    // }
 
     lastUpdate.value = new Date().getTime()
   }
