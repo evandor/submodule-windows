@@ -147,7 +147,7 @@ const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<{ label: string; value: string }[]>([])
 const tabsetsMangedWindows = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
-const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
+const devMode = ref<boolean>(useSettingsStore().has('DEV_MODE'))
 
 const windowIsManaged = (windowName: string) => {
   return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined

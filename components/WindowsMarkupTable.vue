@@ -119,9 +119,8 @@ import { uid, useQuasar } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
 import BrowserApi from 'src/app/BrowserApi'
 import ChromeApi from 'src/app/BrowserApi'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import { Tab } from 'src/tabsets/models/Tab'
@@ -144,7 +143,7 @@ const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<{ label: string; value: string }[]>([])
 const tabsetsMangedWindows = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
-const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
+const devMode = ref<boolean>(useSettingsStore().has('DEV_MODE'))
 
 const windowIsManaged = (windowName: string) => {
   return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
