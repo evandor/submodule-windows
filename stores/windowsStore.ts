@@ -1,8 +1,7 @@
 import _ from 'lodash'
 import { defineStore } from 'pinia'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useUtils } from 'src/core/services/Utils'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
+// import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { Window } from 'src/windows/models/Window'
 import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
 import IndexedDbWindowsPersistence from 'src/windows/persistence/IndexedDbWindowsPersistence'
@@ -170,8 +169,8 @@ export const useWindowsStore = defineStore('windows', () => {
       }),
       (w: Window) => {
         //console.log('---window', w)
-        const windowFromStore: Window | undefined = useWindowsStore().windowForId(w.id || -2, 'windowsStore')
-        const windowName = useWindowsStore().windowNameFor(w.id || 0) || w.id.toString()
+        const windowFromStore: Window | undefined = windowForId(w.id || -2, 'windowsStore')
+        const windowName = windowNameFor(w.id || 0) || w.id.toString()
         if (windowFromStore) {
           windowFromStore.title = windowName
           return WindowHolder.of(windowFromStore, undefined, windowFromStore ? windowFromStore.id : -4, fnc(windowName))
@@ -204,9 +203,9 @@ export const useWindowsStore = defineStore('windows', () => {
   })
 
   async function setup(trigger: string = '', keepWindowsFromStorage = false) {
-    if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
-      return
-    }
+    // if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
+    //   return
+    // }
     console.debug(
       `chrome windows listeners setup triggered (${trigger}), keepWindowsFromStorage: ${keepWindowsFromStorage}`,
     )

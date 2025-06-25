@@ -1,5 +1,5 @@
 import { IDBPDatabase, openDB } from 'idb'
-import { useUiStore } from 'src/ui/stores/uiStore'
+// import { useUiStore } from 'src/ui/stores/uiStore'
 import { Window } from 'src/windows/models/Window'
 
 class IndexedDbWindowsPersistence {
@@ -13,12 +13,12 @@ class IndexedDbWindowsPersistence {
 
   async init() {
     this.db = await this.initDatabase()
-    useUiStore().dbReady = true
+    // useUiStore().dbReady = true
     return Promise.resolve('')
   }
 
   async deleteDatabase(dbName: string) {
-    useUiStore().dbReady = false
+    // useUiStore().dbReady = false
     console.warn(' ...deleting indexeddb database: not implemented', dbName)
   }
 
